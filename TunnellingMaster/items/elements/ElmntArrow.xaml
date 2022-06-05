@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="TunnellingMaster.items.elements.ElmntArrow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TunnellingMaster.items.elements"
+             xmlns:prop="clr-namespace:TunnellingMaster.Properties"
+             mc:Ignorable="d" Width="50" Height="50" x:Name="root">
+    <Grid>
+        <Path Stroke="Black" Data="M 40 15 L 50 20 L 40 25 M 0 20 L 50 20" />
+        <TextBox x:Name="port" Height="20" Text="{Binding Value, ElementName=root}" 
+                 Margin="4" VerticalAlignment="Bottom" HorizontalAlignment="Center" 
+                 Background="{x:Null}" BorderBrush="{x:Null}"
+                 InputMethod.IsInputMethodEnabled="False"
+                 PreviewTextInput="port_PreviewTextInput"
+                 CommandManager.PreviewExecuted="port_PreviewExecuted"
+                 prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"/>
+        
+    </Grid>
+</UserControl>

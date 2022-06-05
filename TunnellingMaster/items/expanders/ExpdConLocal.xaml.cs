@@ -16,8 +16,34 @@ namespace TunnellingMaster.items.expanders
     /// <summary>
     /// ExpdConLocal.xaml の相互作用ロジック
     /// </summary>
-    public partial class ExpdConLocal : ExpdHorizonStack
+    public partial class ExpdConLocal : Expander
     {
+        public string Message
+        {
+            get { return (string)GetValue(MessageProperty); }
+            set { SetValue(MessageProperty, value); }
+        }
+
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register(
+                "Message",                          // プロパティ名
+                typeof(string),                     // プロパティの型
+                typeof(Expander),                   // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata("Message"));   // 初期値
+
+        public string Title
+        {
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register(
+                "Title",                            // プロパティ名
+                typeof(string),                     // プロパティの型
+                typeof(Expander),                   // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata("Title"));     // 初期値
+
         public ExpdConLocal()
         {
             InitializeComponent();
