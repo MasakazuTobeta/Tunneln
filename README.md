@@ -2,5 +2,4 @@
 
 # For dev
 ## Font Awesome icons list
-- https://fontawesome.com/v5/cheatsheet
-- https://fontawesome.com/icons
+- https://johobase.com/font-awesome-icon-font-list-free/#Font_Awesome_Free
