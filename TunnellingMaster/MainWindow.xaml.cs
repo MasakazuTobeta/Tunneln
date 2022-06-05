@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SSH_Tunnel_BOX.src
+namespace TunnellingMaster
 {
     /// <summary>
-    /// PFLocal.xaml の相互作用ロジック
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class PFLocal : StackPanel
+    public partial class MainWindow : Window
     {
-        public PFLocal()
+        public MainWindow()
         {
             InitializeComponent();
         }

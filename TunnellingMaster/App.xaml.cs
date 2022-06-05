@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SSH_Tunnel_BOX
+namespace TunnellingMaster
 {
     /// <summary>
     /// Interaction logic for App.xaml

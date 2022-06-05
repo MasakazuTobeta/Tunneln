@@ -11,29 +11,33 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SSH_Tunnel_BOX
+namespace TunnellingMaster.items
 {
     /// <summary>
-    /// Connection.xaml の相互作用ロジック
+    /// MainStackCommon.xaml の相互作用ロジック
     /// </summary>
-    public partial class Connection : Expander
+    public partial class MainStackCommon : StackPanel
     {
-        public string Message
+        public string Text
         {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
         }
-
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register(
-                "Message",                               // プロパティ名
+                "Text",                                  // プロパティ名
                 typeof(string),                          // プロパティの型
-                typeof(Connection),                      // プロパティを所有する型＝このクラスの名前
-                new PropertyMetadata("Message"));  // 初期値
+                typeof(MainStackCommon),                 // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata("Text:"));   // 初期値
 
-        public Connection()
+        public MainStackCommon()
         {
             InitializeComponent();
+        }
+
+        private void btn_add_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
