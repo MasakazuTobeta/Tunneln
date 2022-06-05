@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Page Remove="items\Connections.xaml" />
+    <Page Remove="items\expanders\ExpdConLocal.xaml" />
     <Page Remove="items\Localhosts.xaml" />
     <Page Remove="items\Proxies.xaml" />
     <Page Remove="items\Remotehosts.xaml" />
@@ -15,6 +16,9 @@
 
   <ItemGroup>
     <Resource Include="items\Connections.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="items\expanders\ExpdConLocal.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Resource Include="items\Localhosts.xaml">
@@ -45,6 +49,10 @@
 
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
   </ItemGroup>
 
 </Project>

@@ -11,23 +11,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items
+namespace TunnellingMaster.items.expanders
 {
     /// <summary>
-    /// Connections.xaml の相互作用ロジック
+    /// ExpdConLocal.xaml の相互作用ロジック
     /// </summary>
-    public partial class Connections : MainStackCommon
+    public partial class ExpdConLocal : ExpdHorizonStack
     {
-        public Connections()
+        public ExpdConLocal()
         {
             InitializeComponent();
-        }
-        private void btn_add_Click(object sender, RoutedEventArgs e)
-        {
-            this.Children.Insert(
-                this.Children.Count - 1,
-                new items.expanders.ExpdConLocal()
-                );
         }
     }
 }
