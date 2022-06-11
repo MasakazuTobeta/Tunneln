@@ -14,19 +14,32 @@ using System.Windows.Shapes;
 namespace TunnellingMaster.items
 {
     /// <summary>
-    /// Connections.xaml の相互作用ロジック
+    /// MainStackCommon.xaml の相互作用ロジック
     /// </summary>
-    public partial class Connections : MainStackCommon
+    public partial class Connections : ScrollViewer
     {
+        public string Text
+        {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register(
+                "Text",                                  // プロパティ名
+                typeof(string),                          // プロパティの型
+                typeof(Connections),                 // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata("Text:"));   // 初期値
+
         public Connections()
         {
             InitializeComponent();
         }
-        private void btn_add_Click(object sender, RoutedEventArgs e)
+
+        private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Children.Insert(
-                this.Children.Count - 1,
-                new items.expanders.ExpdConLocal()
+            this.panel.Children.Insert(
+                this.panel.Children.Count - 1,
+                new expanders.ExpdConLocal()
                 );
         }
     }

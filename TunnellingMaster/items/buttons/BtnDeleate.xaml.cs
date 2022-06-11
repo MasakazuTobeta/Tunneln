@@ -11,26 +11,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items
+namespace TunnellingMaster.items.buttons
 {
     /// <summary>
-    /// MainButtons.xaml の相互作用ロジック
+    /// BtnDeleate.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainButtons : StackPanel
+    public partial class BtnDeleate : Button
     {
-        public MainButtons()
+        public BtnDeleate()
         {
             InitializeComponent();
-        }
-
-        private void btn_disconnect_all_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_connect_all_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

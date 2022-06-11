@@ -9,10 +9,12 @@
              mc:Ignorable="d" x:Name="root"
              d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black">
     <Expander.Header>
-        <StackPanel x:Name="header_panel" Orientation="Horizontal" HorizontalAlignment="Stretch">
+        <StackPanel x:Name="header_panel" Orientation="Horizontal">
             <TextBlock x:Name="title" Text="{Binding Title, ElementName=root}" Margin="5" Height="18" Width="150"/>
             <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18"/>
             <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18"/>
+            <Border BorderThickness="0" Width="100"/>
+            <Button x:Name="Deleate" Content="❌" HorizontalAlignment="Right" FontSize="10" Padding="0,0" Height="15" Width="15" Cursor="Hand" Margin="3" Click="Deleate_Click"/>
         </StackPanel>
     </Expander.Header>
     <StackPanel>
@@ -23,12 +25,13 @@
         </ComboBox>
         <stacks:StkHorizon x:Name="stk_elements" HorizontalAlignment="Stretch">
             <elements:ElmntYou Value="2222"/>
-            <elements:ElmntBlank Text="local&#10;host"/>
+            <elements:ElmntBlank Text="local&#10;host" MouseLeftButtonDown="Setting_LocalHost"/>
             <elements:ElmntArrow Value="22"/>
-            <elements:ElmntBlank Text="bastion&#10;host"/>
+            <elements:ElmntBlankSmall MouseLeftButtonDown="Insert_Host"/>
+            <elements:ElmntBlank Text="bastion&#10;host" MouseLeftButtonDown="Setting_RemoteHost"/>
             <elements:ElmntArrow Value="22"/>
-            <elements:ElmntBlank Text="remote&#10;host"/>
-            <Path Data="M144.0797,57.215091" Fill="#FFF4F4F5" Height="1" Stretch="Fill" Stroke="Black" Width="100"/>
+            <elements:ElmntBlankSmall MouseLeftButtonDown="Insert_Host"/>
+            <elements:ElmntBlank Text="remote&#10;host" MouseLeftButtonDown="Setting_RemoteHost"/>
         </stacks:StkHorizon>
     </StackPanel>
 </Expander>

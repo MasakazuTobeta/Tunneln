@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TunnellingMaster.items.elements"
-             mc:Ignorable="d" x:Name="root"
+             mc:Ignorable="d" x:Name="root" AllowDrop="True"
              Width="50" Height="50" BorderThickness="1" CornerRadius="5" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center">
     <Border.BorderBrush>
         <VisualBrush>
@@ -15,9 +15,48 @@
                                         RadiusY="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=CornerRadius.BottomLeft}"
                                         Stroke="Black"
                                         StrokeDashArray="2"
-                                        StrokeThickness="2" />
+                                        StrokeThickness="2">
+                </Rectangle>
             </VisualBrush.Visual>
         </VisualBrush>
     </Border.BorderBrush>
-    <TextBlock Text="{Binding Text, ElementName=root}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
+    <Border.Style>
+        <Style TargetType="Border">
+            <Setter Property="Background" Value="#3FBFEFA9"/>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="DragEnter">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                        Duration="0:0:0.200" To="#FFBFEFA9" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="DragLeave">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                        Duration="0:0:0" To="#3FBFEFA9" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Drop">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                        Duration="0:0:0" To="#3FBFEFA9" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </Style.Triggers>
+
+        </Style>
+    </Border.Style>
+    <TextBlock Text="{Binding Text, ElementName=root}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Padding="0,0" />
 </Border>

@@ -7,14 +7,14 @@
              xmlns:prop="clr-namespace:TunnellingMaster.Properties"
              mc:Ignorable="d" Width="50" Height="50" x:Name="root">
     <Grid>
-        <Path Stroke="Black" Data="M 40 15 L 50 20 L 40 25 M 0 20 L 50 20" />
+        <Path Stroke="Black" Data="M 40 20 L 50 25 L 40 30 M 0 25 L 50 25" />
         <TextBox x:Name="port" Height="20" Text="{Binding Value, ElementName=root}" 
-                 Margin="4" VerticalAlignment="Bottom" HorizontalAlignment="Center" 
+                 Margin="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" 
                  Background="{x:Null}" BorderBrush="{x:Null}"
                  InputMethod.IsInputMethodEnabled="False"
                  PreviewTextInput="port_PreviewTextInput"
-                 CommandManager.PreviewExecuted="port_PreviewExecuted"
-                 prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"/>
+                 CommandManager.PreviewExecuted="port_PreviewExecuted" Padding="0,0" 
+                 prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
         
     </Grid>
 </UserControl>

@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="TunnellingMaster.items.localhosts.IconLocalhost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:TunnellingMaster.items.localhosts"
+             xmlns:element="clr-namespace:TunnellingMaster.items.elements"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:prop="clr-namespace:TunnellingMaster.Properties"
+             mc:Ignorable="d" x:Name="root" Margin="5" Focusable="True" Width="100" Height="50"
+             BorderBrush="#FF0A6300" BorderThickness="1" Background="#00000000" MouseDoubleClick="root_MouseDoubleClick">
+
+    <!-- 色の定義 -->
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="NormalBackgroundBrush" Color="Transparent"/>
+        <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#3411A500"/>
+        <Style x:Key="HoverGridStyle" TargetType="{x:Type Grid}">
+            <Setter Property="Background" Value="{StaticResource NormalBackgroundBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource HoverBackgroundBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- ドラッグ可能化 -->
+    <b:Interaction.Behaviors>
+        <b:MouseDragElementBehavior 
+            ConstrainToParentBounds="False"
+            X="{Binding XPosition, Mode=TwoWay}" 
+            Y="{Binding YPosition, Mode=TwoWay}"
+            DragBegun="MouseDragElementBehavior_DragBegun"
+            Dragging="MouseDragElementBehavior_Dragging"
+            DragFinished="MouseDragElementBehavior_DragFinished"/>
+        
+        
+    </b:Interaction.Behaviors>
+
+    <!-- アイコンとテキスト -->
+    <Grid Style="{StaticResource HoverGridStyle}">
+        <StackPanel>
+            <fa:ImageAwesome Icon="Laptop" Spin="False"  Margin="5" Height="20" VerticalAlignment="Top"/>
+            <TextBox Text="{Binding Text, ElementName=root}" HorizontalAlignment="Center" TextAlignment="Center"
+                 Margin="1" VerticalAlignment="Bottom"
+                 Background="{x:Null}" BorderBrush="{x:Null}"
+                 InputMethod.IsInputMethodEnabled="False" Padding="0,0" 
+                 prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

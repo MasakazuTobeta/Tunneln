@@ -7,19 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Page Remove="items\Connections.xaml" />
-    <Page Remove="items\Localhosts.xaml" />
     <Page Remove="items\Proxies.xaml" />
     <Page Remove="items\Remotehosts.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="items\Connections.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Resource>
-    <Resource Include="items\Localhosts.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Resource>
     <Resource Include="items\Proxies.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Resource>
@@ -69,6 +61,10 @@
 
   <ItemGroup>
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+    <PackageReference Include="MaterialDesignColors" Version="2.0.6" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="RandomFriendlyNameGenerator" Version="1.0.7" />
   </ItemGroup>
 
 </Project>

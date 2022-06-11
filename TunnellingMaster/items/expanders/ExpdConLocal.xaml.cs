@@ -48,5 +48,34 @@ namespace TunnellingMaster.items.expanders
         {
             InitializeComponent();
         }
+
+        private void Insert_Host(object sender, MouseButtonEventArgs e)
+        {
+            int insert_idx = this.stk_elements.Children.IndexOf((UIElement)sender);
+            elements.ElmntBlank blank = new elements.ElmntBlank();
+            blank.Text = "bastion\r\nhost";
+            elements.ElmntArrow arrow = new elements.ElmntArrow();
+            arrow.Value = "22";
+            elements.ElmntBlankSmall add = new elements.ElmntBlankSmall();
+            add.MouseLeftButtonDown += this.Insert_Host;
+            this.stk_elements.Children.Insert(insert_idx, arrow);
+            this.stk_elements.Children.Insert(insert_idx, blank);
+            this.stk_elements.Children.Insert(insert_idx, add);
+        }
+
+        private void Setting_LocalHost(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Setting_RemoteHost(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Deleate_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as StackPanel).Children.Remove(this);
+        }
     }
 }

@@ -11,12 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items
+namespace TunnellingMaster.items.elements
 {
     /// <summary>
-    /// MainStackCommon.xaml の相互作用ロジック
+    /// ElmntBlank.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainStackCommon : ScrollViewer
+    public partial class ElmntBlankSmall : Border
     {
         public string Text
         {
@@ -27,17 +27,12 @@ namespace TunnellingMaster.items
             DependencyProperty.Register(
                 "Text",                                  // プロパティ名
                 typeof(string),                          // プロパティの型
-                typeof(MainStackCommon),                 // プロパティを所有する型＝このクラスの名前
-                new PropertyMetadata("Text:"));   // 初期値
+                typeof(ElmntBlankSmall),                 // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata("✚"));  // 初期値
 
-        public MainStackCommon()
+        public ElmntBlankSmall()
         {
             InitializeComponent();
-        }
-
-        private void Add_Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
