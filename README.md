@@ -2,7 +2,7 @@
 
 # For dev
 ## icons
-- https://johobase.com/font-awesome-icon-font-list-free/#Font_Awesome_Free
+- https://fontawesome.com/v5/cheatsheet
 - https://lets-emoji.com/emojilist/emojilist-8/
 ## WPF Drag and Drop
 - https://qiita.com/mkuwan/items/35d91e7c2f9edfe9884a
