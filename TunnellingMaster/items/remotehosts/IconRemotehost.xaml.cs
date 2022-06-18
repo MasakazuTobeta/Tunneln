@@ -12,27 +12,37 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items.localhosts
+namespace TunnellingMaster.items.remotehosts
 {
-    public enum IconLocalhost_State
+    public enum IconRemotehost_State
     {
         Resource = 0,
         Blank = 1,
         InFlow = 2,
     }
-    /// <summary>
-    /// IconLocalhost.xaml の相互作用ロジック
-    /// </summary>
-    public partial class IconLocalhost : UserControl
-    {
-        private IconLocalhost parent = null;
-        private List<IconLocalhost> children = new List<IconLocalhost>();
 
-        public IconLocalhost(string Text = "localhost", IconLocalhost_State State = IconLocalhost_State.Resource)
+    public enum IconRemotehost_Type
+    {
+        Server = 0,
+        Proxy  = 1,
+    }
+
+    /// <summary>
+    /// IconRemotehost.xaml の相互作用ロジック
+    /// </summary>
+    public partial class IconRemotehost : UserControl
+    {
+        private IconRemotehost parent = null;
+        private List<IconRemotehost> children = new List<IconRemotehost>();
+
+        public IconRemotehost(string Text = "remotehost", 
+                              IconRemotehost_State State = IconRemotehost_State.Resource, 
+                              IconRemotehost_Type Type = IconRemotehost_Type.Server)
         {
             InitializeComponent();
-            this.Text = Text;
+            this.Text  = Text;
             this.State = State;
+            this.Type  = Type;
             UpdateView();
         }
 
@@ -45,45 +55,68 @@ namespace TunnellingMaster.items.localhosts
             DependencyProperty.Register(
                 "Text",                              // プロパティ名
                 typeof(string),                      // プロパティの型
-                typeof(IconLocalhost),               // プロパティを所有する型＝このクラスの名前
-                new PropertyMetadata("localhost"));  // 初期値
+                typeof(IconRemotehost),               // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata("remotehost"));  // 初期値
 
-        public IconLocalhost_State State
+        public IconRemotehost_State State
         {
-            get { return (IconLocalhost_State)GetValue(StateProperty); }
+            get { return (IconRemotehost_State)GetValue(StateProperty); }
             set { SetValue(StateProperty, value); }
         }
         public static readonly DependencyProperty StateProperty =
             DependencyProperty.Register(
                 "State",                                                // プロパティ名
-                typeof(IconLocalhost_State),                            // プロパティの型
-                typeof(IconLocalhost),                                  // プロパティを所有する型＝このクラスの名前
-                new PropertyMetadata(IconLocalhost_State.Resource));    // 初期値
+                typeof(IconRemotehost_State),                            // プロパティの型
+                typeof(IconRemotehost),                                  // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata(IconRemotehost_State.Resource));    // 初期値
 
+
+        public IconRemotehost_Type Type
+        {
+            get { return (IconRemotehost_Type)GetValue(TypeProperty); }
+            set { SetValue(TypeProperty, value); }
+        }
+        public static readonly DependencyProperty TypeProperty =
+            DependencyProperty.Register(
+                "Type",                                               // プロパティ名
+                typeof(IconRemotehost_Type),                          // プロパティの型
+                typeof(IconRemotehost),                               // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata(IconRemotehost_Type.Server));    // 初期値
 
         private void UpdateView()
         {
             switch (this.State)
             {
-                case IconLocalhost_State.InFlow:
+                case IconRemotehost_State.InFlow:
                     this.icon_std.Visibility = Visibility.Collapsed;
                     this.icon_blank.Visibility = Visibility.Collapsed;
                     this.icon_in_flow.Visibility = Visibility.Visible;
                     break;
-                case IconLocalhost_State.Blank:
+                case IconRemotehost_State.Blank:
                     this.icon_std.Visibility = Visibility.Collapsed;
                     this.icon_blank.Visibility = Visibility.Visible;
                     this.icon_in_flow.Visibility = Visibility.Collapsed;
                     break;
-                default: //IconLocalhost_State.Resource
+                default: //IconRemotehost_State.Resource
                     this.icon_std.Visibility = Visibility.Visible;
                     this.icon_blank.Visibility = Visibility.Collapsed;
                     this.icon_in_flow.Visibility = Visibility.Collapsed;
                     break;
             }
+            switch (this.Type)
+            {
+                case IconRemotehost_Type.Proxy:
+                    this.icon1_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Connectdevelop;
+                    this.icon2_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Connectdevelop;
+                    break;
+                default:
+                    this.icon1_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Server;
+                    this.icon2_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Server;
+                    break;
+            }
         }
 
-        public IconLocalhost copy_properties(IconLocalhost _src, IconLocalhost _dst)
+        public IconRemotehost copy_properties(IconRemotehost _src, IconRemotehost _dst)
         {
             _dst.Text = _src.Text;
             return _dst;
@@ -91,7 +124,7 @@ namespace TunnellingMaster.items.localhosts
 
         public override string ToString()
         {
-            var ret = new Dictionary<string, string>() { {"type", "localhost"},};
+            var ret = new Dictionary<string, string>() { { "type", "remotehost" }, };
             return ret.ToString();
         }
 
@@ -129,10 +162,10 @@ namespace TunnellingMaster.items.localhosts
         {
         }
 
-        private void SetParent(IconLocalhost parent)
+        private void SetParent(IconRemotehost parent)
         {
             Debug.Print("Set parent");
-            IconLocalhost _parent = parent;
+            IconRemotehost _parent = parent;
             while (!(_parent.parent is null))
             {
                 _parent = _parent.parent;
@@ -141,7 +174,8 @@ namespace TunnellingMaster.items.localhosts
 
             this.parent = _parent;
             this.Text   = _parent.Text;
-            this.State  = IconLocalhost_State.InFlow;
+            this.Type   = _parent.Type;
+            this.State  = IconRemotehost_State.InFlow;
             this.UpdateView();
         }
 
@@ -152,14 +186,14 @@ namespace TunnellingMaster.items.localhosts
             if (e.Data.GetDataPresent("Object"))
             {
                 var data = e.Data.GetData("Object");
-                if (typeof(IconLocalhost).IsInstanceOfType(data))
+                if (typeof(IconRemotehost).IsInstanceOfType(data))
                 {
-                    IconLocalhost parent = (data as IconLocalhost);
+                    IconRemotehost parent = (data as IconRemotehost);
                     if (ReferenceEquals(parent, this))
                     {
                         Debug.Print("Is instance of self");
                     }
-                    else if (this.State != IconLocalhost_State.Resource)
+                    else if (this.State != IconRemotehost_State.Resource)
                     {
                         this.SetParent(parent);
                     }

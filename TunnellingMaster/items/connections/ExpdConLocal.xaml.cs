@@ -10,8 +10,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TunnellingMaster.items.connections;
 
-namespace TunnellingMaster.items.expanders
+namespace TunnellingMaster.items.connections
 {
     /// <summary>
     /// ExpdConLocal.xaml の相互作用ロジック
@@ -47,20 +48,30 @@ namespace TunnellingMaster.items.expanders
         public ExpdConLocal()
         {
             InitializeComponent();
+            SetInitialConnection();
+            SetupDropEvent();
         }
 
-        private void Insert_Host(object sender, MouseButtonEventArgs e)
+        private CommonPannel flow_panel = null;
+        private void SetInitialConnection()
         {
-            int insert_idx = this.stk_elements.Children.IndexOf((UIElement)sender);
-            elements.ElmntBlank blank = new elements.ElmntBlank();
-            blank.Text = "bastion\r\nhost";
-            elements.ElmntArrow arrow = new elements.ElmntArrow();
-            arrow.Value = "22";
-            elements.ElmntBlankSmall add = new elements.ElmntBlankSmall();
-            add.MouseLeftButtonDown += this.Insert_Host;
-            this.stk_elements.Children.Insert(insert_idx, arrow);
-            this.stk_elements.Children.Insert(insert_idx, blank);
-            this.stk_elements.Children.Insert(insert_idx, add);
+            this.flow_panel = (CommonPannel)(new LocalPortForward());
+            this.connection_view.Content = this.flow_panel;
+        }
+
+        private void DragOver_LocalHost(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void Dropped_LocalHost(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void SetupDropEvent()
+        {
+            
         }
 
         private void Setting_LocalHost(object sender, MouseButtonEventArgs e)
@@ -76,6 +87,11 @@ namespace TunnellingMaster.items.expanders
         private void Deleate_Click(object sender, RoutedEventArgs e)
         {
             (this.Parent as StackPanel).Children.Remove(this);
+        }
+
+        private void Your_Port_Edit(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

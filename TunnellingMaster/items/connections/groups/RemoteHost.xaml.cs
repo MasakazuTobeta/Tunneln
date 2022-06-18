@@ -10,17 +10,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TunnellingMaster.items.remotehosts;
 
-namespace TunnellingMaster.items
+namespace TunnellingMaster.items.connections.groups
 {
     /// <summary>
-    /// Remotehosts.xaml の相互作用ロジック
+    /// RemoteHost.xaml の相互作用ロジック
     /// </summary>
-    public partial class Remotehosts : MainStackCommon
+    public partial class RemoteHost : UserControl
     {
-        public Remotehosts()
+        public RemoteHost(string Text = "remote\r\nhost")
         {
             InitializeComponent();
+            this.panel.Children.Add(new IconRemotehost(Text, IconRemotehost_State.Blank, IconRemotehost_Type.Server));
         }
     }
 }

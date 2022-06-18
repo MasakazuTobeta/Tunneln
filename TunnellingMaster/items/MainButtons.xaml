@@ -7,8 +7,8 @@
              xmlns:items="clr-namespace:TunnellingMaster.items"
              mc:Ignorable="d"  Orientation="Horizontal" HorizontalAlignment="Right" 
              d:DesignHeight="88.091" d:DesignWidth="792.189">
-    <Button x:Name="bnt_load" Content=" Load " Margin="5" FontSize="10"/>
-    <Button x:Name="btn_save" Content=" Save " Margin="5" FontSize="10"/>
+    <Button x:Name="bnt_load" Content=" Inport " Margin="5" FontSize="10"/>
+    <Button x:Name="btn_save" Content=" Export " Margin="5" FontSize="10" Cursor="Hand"/>
     <Button x:Name="btn_disconnect_all" Content=" Close all " Margin="5" FontSize="10" Click="btn_disconnect_all_Click"/>
     <Button x:Name="btn_connect_all" Content=" Connect all " Margin="5" FontSize="10" Click="btn_connect_all_Click" Cursor="Hand"/>
 </StackPanel>

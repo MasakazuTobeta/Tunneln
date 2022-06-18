@@ -1,0 +1,34 @@
+﻿<Expander x:Class="TunnellingMaster.items.connections.ExpdConLocal"
+             xmlns:elements="clr-namespace:TunnellingMaster.items.elements"  
+             xmlns:stacks="clr-namespace:TunnellingMaster.items.stacks" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:ts="clr-namespace:WpfControlLibrary"
+             xmlns:local="clr-namespace:TunnellingMaster.items.connections"
+             mc:Ignorable="d" x:Name="root"
+             d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black">
+    <Expander.Header>
+        <StackPanel x:Name="header_panel" Orientation="Horizontal">
+            <TextBlock x:Name="title" Text="{Binding Title, ElementName=root}" Margin="5" Height="18" Width="150"/>
+            <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18"/>
+            <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18"/>
+            <Border BorderThickness="0" Width="100"/>
+            <Button x:Name="Deleate" Content="❌" HorizontalAlignment="Right" FontSize="10" Padding="0,0" Height="15" Width="15" Cursor="Hand" Margin="3" Click="Deleate_Click"/>
+        </StackPanel>
+    </Expander.Header>
+
+    <StackPanel x:Name="stack_panel">
+        <ComboBox SelectedIndex="0" x:Name="connection_type" BorderThickness="1">
+            <ComboBoxItem x:Name="type_local" Content=" Local port forwarding (LPF)" IsEnabled="True"/>
+            <ComboBoxItem x:Name="type_remote" Content=" Remote port forwarding (RPF)" IsEnabled="False"/>
+            <ComboBoxItem x:Name="type_dynamic" Content=" Dynamic port forwarding (DPF)" IsEnabled="False"/>
+            <ComboBoxItem x:Name="type_samba" Content=" [Template] Samba (LPF)" IsEnabled="False"/>
+            <ComboBoxItem x:Name="type_socks" Content=" [Template] SOCKS proxy (DPF)" IsEnabled="False"/>
+        </ComboBox>
+        <ScrollViewer x:Name="connection_view" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto"/>
+        <TextBlock x:Name="status_massage"  Text="(status)" TextAlignment="Right" Margin="5,0,5,0"/>
+    </StackPanel>
+</Expander>

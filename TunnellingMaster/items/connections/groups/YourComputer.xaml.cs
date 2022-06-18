@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,17 +11,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TunnellingMaster.items.localhosts;
 
-namespace TunnellingMaster.items
+namespace TunnellingMaster.items.connections.groups
 {
     /// <summary>
-    /// Proxies.xaml の相互作用ロジック
+    /// YourComputer.xaml の相互作用ロジック
     /// </summary>
-    public partial class Proxies : MainStackCommon
+    public partial class YourComputer : UserControl
     {
-        public Proxies()
+        public YourComputer(string Text = "local\r\nhost")
         {
             InitializeComponent();
+            this.panel.Children.Add(new IconLocalhost(Text, IconLocalhost_State.Blank));
         }
+
     }
 }

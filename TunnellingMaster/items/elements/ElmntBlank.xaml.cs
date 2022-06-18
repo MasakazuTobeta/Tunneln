@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Reactive.Bindings;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +21,11 @@ namespace TunnellingMaster.items.elements
     /// </summary>
     public partial class ElmntBlank : Border
     {
+        private CompositeDisposable Disposable { get; } = new CompositeDisposable();
+        public ReactivePropertySlim<string> DropFile { get; }
+        public ReactiveCommand<DragEventArgs> FileDropCommand { get; private set; }
+
+
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
@@ -33,6 +41,13 @@ namespace TunnellingMaster.items.elements
         public ElmntBlank()
         {
             InitializeComponent();
+            EnableDragDrop();
         }
+
+        private void EnableDragDrop()
+        {
+            this.AllowDrop = true;
+        }
+
     }
 }

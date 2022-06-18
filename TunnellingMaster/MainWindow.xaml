@@ -5,38 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TunnellingMaster"
         xmlns:items="clr-namespace:TunnellingMaster.items"
+        xmlns:localhosts="clr-namespace:TunnellingMaster.items.localhosts"
+        xmlns:remotehosts="clr-namespace:TunnellingMaster.items.remotehosts"
+        xmlns:connections="clr-namespace:TunnellingMaster.items.connections"
         mc:Ignorable="d"
         Title="Tunnelling Master" Height="450" Width="800">
-    <Grid x:Name="root_grid" x:FieldModifier="public">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="4"/>
-            <ColumnDefinition Width="100*"/>
-        </Grid.ColumnDefinitions>
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="180*"/>
-                <RowDefinition Height="2"/>
-                <RowDefinition Height="43"/>
-            </Grid.RowDefinitions>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
-            <Grid Grid.Row="0" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100*"/>
-                    <ColumnDefinition Width="4"/>
-                    <ColumnDefinition Width="100*"/>
-                    <ColumnDefinition Width="4"/>
-                    <ColumnDefinition Width="100*"/>
-                </Grid.ColumnDefinitions>
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-                <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" />
-                <items:Localhosts Text="Local hosts:" x:Name="stack_localhosts" Grid.Column="0"/>
-                <items:Proxies Text="Proxies:" x:Name="stack_proxies" Grid.Column="2"/>
-                <items:Remotehosts Text="Remote hosts:" x:Name="stack_remotehosts" Grid.Column="4"/>
+    <Grid x:Name="root_grid" x:FieldModifier="public" Grid.Row="0" Grid.Column="0">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="100*"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="180*"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="43"/>
+                </Grid.RowDefinitions>
+                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
+                <Grid Grid.Row="0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100*"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="100*"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="100*"/>
+                    </Grid.ColumnDefinitions>
+                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                    <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" />
+                    <localhosts:Localhosts x:Name="stack_localhosts" Grid.Column="0"/>
+                    <remotehosts:Proxies x:Name="stack_proxies" Grid.Column="2"/>
+                    <remotehosts:Remotehosts x:Name="stack_remotehosts" Grid.Column="4"/>
+                </Grid>
+                <items:MainButtons Grid.Row="2"/>
             </Grid>
-            <items:MainButtons Grid.Row="2"/>
+            <connections:Connections x:Name="stack_connections"/>
         </Grid>
-        <items:Connections Text="Connections:"/>
     </Grid>
 </Window>
