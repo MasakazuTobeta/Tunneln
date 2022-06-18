@@ -83,6 +83,7 @@ namespace TunnellingMaster.items.remotehosts
         {
             int _idx = this.panel.Children.Count - 1;
             IconRemotehost _new_item = new IconRemotehost("proxy", IconRemotehost_State.Resource, IconRemotehost_Type.Proxy);
+            _new_item.address = "127.0.0.1:8080";
             List<string> _already_names = this.get_name_list();
 
             for (int _ii = 1; _ii <= 100; _ii++)
@@ -93,7 +94,7 @@ namespace TunnellingMaster.items.remotehosts
                 }
                 _new_item.Text = NameGenerator.PersonNames.Get(separator: ".");
             }
-
+            _new_item.OpenDialogProxy();
             this.panel.Children.Insert(_idx, _new_item);
         }
     }

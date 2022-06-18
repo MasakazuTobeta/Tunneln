@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ColorHelper;
 
 namespace TunnellingMaster.items.remotehosts
 {
@@ -34,6 +35,11 @@ namespace TunnellingMaster.items.remotehosts
     {
         private IconRemotehost parent = null;
         private List<IconRemotehost> children = new List<IconRemotehost>();
+        public dialog.ProxyType proxyType = 0;
+        public string address = "localhost";
+        public string user = "";
+        public string pass = "";
+
 
         public IconRemotehost(string Text = "remotehost", 
                               IconRemotehost_State State = IconRemotehost_State.Resource, 
@@ -83,6 +89,47 @@ namespace TunnellingMaster.items.remotehosts
                 typeof(IconRemotehost),                               // プロパティを所有する型＝このクラスの名前
                 new PropertyMetadata(IconRemotehost_Type.Server));    // 初期値
 
+        public Color Color
+        {
+            get
+            {
+                return (this.icon1_image.Foreground as SolidColorBrush).Color;
+            }
+            set
+            {
+                Brush _b = new SolidColorBrush(value);
+                this.icon1_image.Foreground = _b;
+                this.icon2_image.Foreground = _b;
+            }
+        }
+
+        public FontAwesome.WPF.FontAwesomeIcon Icon
+        {
+            get
+            {
+                return this.icon1_image.Icon;
+            }
+            set
+            {
+                this.icon1_image.Icon = value;
+                this.icon2_image.Icon = value;
+            }
+
+        }
+
+        public Color GetRandomColor(int s = 100, int v = 80)
+        {
+            Random r = new Random();
+            int h = r.Next(0, 100);
+            RGB rgb = ColorHelper.ColorConverter.HsvToRgb(new HSV(Convert.ToByte(h),
+                                                                  Convert.ToByte(s),
+                                                                  Convert.ToByte(v)));
+            return Color.FromArgb(255,
+                                  Convert.ToByte(rgb.R),
+                                  Convert.ToByte(rgb.G), 
+                                  Convert.ToByte(rgb.B));
+        }
+
         private void UpdateView()
         {
             switch (this.State)
@@ -106,13 +153,19 @@ namespace TunnellingMaster.items.remotehosts
             switch (this.Type)
             {
                 case IconRemotehost_Type.Proxy:
-                    this.icon1_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Connectdevelop;
-                    this.icon2_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Connectdevelop;
+                    this.Icon = FontAwesome.WPF.FontAwesomeIcon.Connectdevelop;
                     break;
                 default:
-                    this.icon1_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Server;
-                    this.icon2_image.Icon = FontAwesome.WPF.FontAwesomeIcon.Server;
+                    this.Icon = FontAwesome.WPF.FontAwesomeIcon.Server;
                     break;
+            }
+            if (this.parent is null)
+            {
+                this.Color = this.GetRandomColor();
+            }
+            foreach (IconRemotehost _child in this.children)
+            {
+                _child.SetParent(this);
             }
         }
 
@@ -160,6 +213,54 @@ namespace TunnellingMaster.items.remotehosts
 
         private void root_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            switch (this.Type)
+            {
+                case IconRemotehost_Type.Proxy:
+                    this.OpenDialogProxy();
+                    break;
+                default:
+                    this.OpenDialogServer();
+                    break;
+            }
+        }
+
+        public void OpenDialogServer()
+        {
+            dialog.DialogProxy _dialog = new dialog.DialogProxy(this);
+            _dialog.ok.Click += (s, e) =>
+            {
+                this.Text = _dialog.name.Text;
+                this.address = _dialog.address.Text;
+                _dialog.Close();
+                this.UpdateView();
+            };
+            _dialog.Closed += (s, e) =>
+            {
+                this.IsEnabled = true;
+            };
+            this.IsEnabled = false;
+            _dialog.Show();
+        }
+
+        public void OpenDialogProxy()
+        {
+            dialog.DialogProxy _dialog = new dialog.DialogProxy(this);
+            _dialog.ok.Click += (s, e) =>
+            {
+                this.Text = _dialog.name.Text;
+                this.proxyType = _dialog.proxyType;
+                this.address = _dialog.address.Text;
+                this.user = _dialog.user.Text;
+                this.pass = _dialog.pass.Text;
+                _dialog.Close();
+                this.UpdateView();
+            };
+            _dialog.Closed += (s, e) =>
+            {
+                this.IsEnabled = true;
+            };
+            this.IsEnabled = false;
+            _dialog.Show();
         }
 
         private void SetParent(IconRemotehost parent)
@@ -175,6 +276,7 @@ namespace TunnellingMaster.items.remotehosts
             this.parent = _parent;
             this.Text   = _parent.Text;
             this.Type   = _parent.Type;
+            this.Color  = _parent.Color;
             this.State  = IconRemotehost_State.InFlow;
             this.UpdateView();
         }
