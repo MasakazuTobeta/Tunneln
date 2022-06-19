@@ -93,7 +93,7 @@ namespace TunnellingMaster.items.remotehosts
                 }
                 _new_item.Text = NameGenerator.PersonNames.Get(separator: ".");
             }
-
+            _new_item.OpenDialogServer();
             this.panel.Children.Insert(_idx, _new_item);
         }
     }

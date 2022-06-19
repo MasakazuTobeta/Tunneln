@@ -19,11 +19,11 @@ namespace TunnellingMaster.items.remotehosts.dialog
     };
 
     /// <summary>
-    /// DialogProxy.xaml の相互作用ロジック
+    /// DialogServer.xaml の相互作用ロジック
     /// </summary>
-    public partial class DialogProxy : Window
+    public partial class DialogServer : Window
     {
-        public DialogProxy(IconRemotehost remotehost = null)
+        public DialogServer(IconRemotehost remotehost = null)
         {
             InitializeComponent();
             if (!(remotehost is null))
@@ -34,6 +34,23 @@ namespace TunnellingMaster.items.remotehosts.dialog
                 this.user.Text = remotehost.user;
                 this.pass.Text = remotehost.pass;
                 this.Color = remotehost.Color;
+                if (remotehost.Type == IconRemotehost_Type.Proxy)
+                {
+                    this.icon_top.Icon = FontAwesome.WPF.FontAwesomeIcon.Connectdevelop;
+                }
+            }
+            switch (this.icon_top.Icon)
+            {
+                case FontAwesome.WPF.FontAwesomeIcon.Connectdevelop:
+                    this.area_proxy_type.Visibility = Visibility.Visible;
+                    this.area_ssh_key.Visibility = Visibility.Collapsed;
+                    this.Title = "Proxy Configuration";
+                    break;
+                default:
+                    this.area_proxy_type.Visibility = Visibility.Collapsed;
+                    this.area_ssh_key.Visibility = Visibility.Visible;
+                    this.Title = "Remote Host Configuration";
+                    break;
             }
         }
 
@@ -97,6 +114,11 @@ namespace TunnellingMaster.items.remotehosts.dialog
         private void type_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void select_key_file_Click(object sender, RoutedEventArgs e)
+        {
+            // キーファイル選択ダイアログ
         }
     }
 }

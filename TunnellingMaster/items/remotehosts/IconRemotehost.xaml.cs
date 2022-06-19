@@ -213,45 +213,16 @@ namespace TunnellingMaster.items.remotehosts
 
         private void root_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            switch (this.Type)
-            {
-                case IconRemotehost_Type.Proxy:
-                    this.OpenDialogProxy();
-                    break;
-                default:
-                    this.OpenDialogServer();
-                    break;
-            }
+            this.OpenDialogServer();
         }
 
         public void OpenDialogServer()
         {
-            dialog.DialogProxy _dialog = new dialog.DialogProxy(this);
+            dialog.DialogServer _dialog = new dialog.DialogServer(this);
             _dialog.ok.Click += (s, e) =>
             {
                 this.Text = _dialog.name.Text;
                 this.address = _dialog.address.Text;
-                _dialog.Close();
-                this.UpdateView();
-            };
-            _dialog.Closed += (s, e) =>
-            {
-                this.IsEnabled = true;
-            };
-            this.IsEnabled = false;
-            _dialog.Show();
-        }
-
-        public void OpenDialogProxy()
-        {
-            dialog.DialogProxy _dialog = new dialog.DialogProxy(this);
-            _dialog.ok.Click += (s, e) =>
-            {
-                this.Text = _dialog.name.Text;
-                this.proxyType = _dialog.proxyType;
-                this.address = _dialog.address.Text;
-                this.user = _dialog.user.Text;
-                this.pass = _dialog.pass.Text;
                 _dialog.Close();
                 this.UpdateView();
             };
