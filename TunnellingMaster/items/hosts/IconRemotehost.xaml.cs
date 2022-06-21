@@ -39,7 +39,7 @@ namespace TunnellingMaster.items.hosts
         public string address = "localhost";
         public string user = "";
         public string pass = "";
-
+        public bool enable = false;
 
         public IconRemotehost(string Text = "remotehost", 
                               IconRemotehost_State State = IconRemotehost_State.Resource, 
@@ -221,8 +221,10 @@ namespace TunnellingMaster.items.hosts
             dialog.DialogServer _dialog = new dialog.DialogServer(this);
             _dialog.ok.Click += (s, e) =>
             {
+                /* ダイアログから回収してくる値 */
                 this.Text = _dialog.name.Text;
                 this.address = _dialog.address.Text;
+                this.enable = true;
                 _dialog.Close();
                 this.UpdateView();
             };

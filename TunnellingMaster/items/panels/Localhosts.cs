@@ -102,6 +102,7 @@ namespace TunnellingMaster.items.hosts
             }
 
             this.panel.Children.Insert(_idx, _new_item);
+
         }
     }
 }

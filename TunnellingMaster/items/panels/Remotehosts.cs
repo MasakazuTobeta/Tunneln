@@ -95,6 +95,16 @@ namespace TunnellingMaster.items.hosts
             }
             _new_item.OpenDialogServer();
             this.panel.Children.Insert(_idx, _new_item);
+
+            _new_item.IsEnabledChanged += (s, e) =>
+            {
+                if (!(_new_item.enable))
+                {
+                    /* 初回ダイアログでCancelボタンが押されたためアイコン除去 */
+                    this.panel.Children.Remove(_new_item);
+                    _new_item = null;
+                }
+            };
         }
     }
 }

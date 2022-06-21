@@ -7,26 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="items\elements\ElmntArrow - コピー %282%29.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>ElmntArrow.xaml.cs</DependentUpon>
-    </Compile>
-    <Compile Update="items\elements\ElmntArrow - コピー - コピー %282%29.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>ElmntArrow - コピー.xaml.cs</DependentUpon>
-    </Compile>
-    <Compile Update="items\elements\ElmntArrow - コピー - コピー - コピー.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>ElmntArrow - コピー - コピー.xaml.cs</DependentUpon>
-    </Compile>
-    <Compile Update="items\elements\ElmntArrow - コピー - コピー.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>ElmntArrow - コピー.xaml.cs</DependentUpon>
-    </Compile>
-    <Compile Update="items\elements\ElmntArrow - コピー.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>ElmntArrow.xaml.cs</DependentUpon>
-    </Compile>
     <Compile Update="items\hosts\IconRemotehost.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -51,13 +31,9 @@
   <ItemGroup>
     <PackageReference Include="ColorHelper" Version="1.6.2" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="3.1.1" />
     <PackageReference Include="MaterialDesignColors" Version="2.0.6" />
     <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="RandomFriendlyNameGenerator" Version="1.0.7" />
-    <PackageReference Include="ReactiveProperty" Version="8.1.2" />
-    <PackageReference Include="ReactiveProperty.WPF" Version="8.1.2" />
   </ItemGroup>
 
   <ItemGroup>
