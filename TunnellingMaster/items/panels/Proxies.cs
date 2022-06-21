@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items.remotehosts
+namespace TunnellingMaster.items.hosts
 {
     /// <summary>
     /// このカスタム コントロールを XAML ファイルで使用するには、手順 1a または 1b の後、手順 2 に従います。
@@ -21,14 +21,14 @@ namespace TunnellingMaster.items.remotehosts
     /// この XmlNamespace 属性を使用場所であるマークアップ ファイルのルート要素に
     /// 追加します:
     ///
-    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.Remotehosts"
+    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.proxies"
     ///
     ///
     /// 手順 1b) 異なるプロジェクトに存在する XAML ファイルでこのカスタム コントロールを使用する場合
     /// この XmlNamespace 属性を使用場所であるマークアップ ファイルのルート要素に
     /// 追加します:
     ///
-    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.Remotehosts;assembly=TunnellingMaster.items.Remotehosts"
+    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.proxies;assembly=TunnellingMaster.items.proxies"
     ///
     /// また、XAML ファイルのあるプロジェクトからこのプロジェクトへのプロジェクト参照を追加し、
     /// リビルドして、コンパイル エラーを防ぐ必要があります:
@@ -40,25 +40,25 @@ namespace TunnellingMaster.items.remotehosts
     /// 手順 2)
     /// コントロールを XAML ファイルで使用します。
     ///
-    ///     <MyNamespace:Remotehosts/>
+    ///     <MyNamespace:Proxies/>
     ///
     /// </summary>
-    public class Remotehosts : ScrollViewer
+    public class Proxies : ScrollViewer
     {
-        static Remotehosts()
+        static Proxies()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(Remotehosts), new FrameworkPropertyMetadata(typeof(Remotehosts)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Proxies), new FrameworkPropertyMetadata(typeof(Proxies)));
         }
 
         public StackPanel panel = new StackPanel();
         public Label label = new Label();
         public Button add_button = new Button();
 
-        public Remotehosts()
+        public Proxies()
         {
             this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             this.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-            this.label.Content = "Remotehosts:";
+            this.label.Content = "Proxies:";
             Setter.ButtonAdd(this.add_button);
             this.add_button.Click += Add_Button_Click;
             this.panel.Children.Add(this.label);
@@ -82,7 +82,8 @@ namespace TunnellingMaster.items.remotehosts
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
             int _idx = this.panel.Children.Count - 1;
-            IconRemotehost _new_item = new IconRemotehost("remotehost", IconRemotehost_State.Resource, IconRemotehost_Type.Server);
+            IconRemotehost _new_item = new IconRemotehost("proxy", IconRemotehost_State.Resource, IconRemotehost_Type.Proxy);
+            _new_item.address = "127.0.0.1:8080";
             List<string> _already_names = this.get_name_list();
 
             for (int _ii = 1; _ii <= 100; _ii++)

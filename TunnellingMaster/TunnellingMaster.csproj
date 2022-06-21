@@ -27,7 +27,7 @@
       <SubType>Code</SubType>
       <DependentUpon>ElmntArrow.xaml.cs</DependentUpon>
     </Compile>
-    <Compile Update="items\remotehosts\IconRemotehost.xaml.cs">
+    <Compile Update="items\hosts\IconRemotehost.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -61,7 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="items\remotehosts\IconRemotehost.xaml">
+    <Page Update="items\hosts\IconRemotehost.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

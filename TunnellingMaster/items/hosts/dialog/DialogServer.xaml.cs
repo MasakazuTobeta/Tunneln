@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items.remotehosts.dialog
+namespace TunnellingMaster.items.hosts.dialog
 {
     public enum ProxyType { 
         HTTP = 0,

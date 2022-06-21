@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ColorHelper;
 
-namespace TunnellingMaster.items.remotehosts
+namespace TunnellingMaster.items.hosts
 {
     public enum IconRemotehost_State
     {

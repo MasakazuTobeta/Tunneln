@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TunnellingMaster.items.localhosts
+namespace TunnellingMaster.items.hosts
 {
     public enum IconLocalhost_State
     {

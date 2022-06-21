@@ -11,9 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TunnellingMaster.items.buttons;
 
-namespace TunnellingMaster.items.localhosts
+namespace TunnellingMaster.items.hosts
 {
     /// <summary>
     /// このカスタム コントロールを XAML ファイルで使用するには、手順 1a または 1b の後、手順 2 に従います。
@@ -22,14 +21,14 @@ namespace TunnellingMaster.items.localhosts
     /// この XmlNamespace 属性を使用場所であるマークアップ ファイルのルート要素に
     /// 追加します:
     ///
-    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.localhosts"
+    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.hosts"
     ///
     ///
     /// 手順 1b) 異なるプロジェクトに存在する XAML ファイルでこのカスタム コントロールを使用する場合
     /// この XmlNamespace 属性を使用場所であるマークアップ ファイルのルート要素に
     /// 追加します:
     ///
-    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.localhosts;assembly=TunnellingMaster.items.localhosts"
+    ///     xmlns:MyNamespace="clr-namespace:TunnellingMaster.items.hosts;assembly=TunnellingMaster.items.hosts"
     ///
     /// また、XAML ファイルのあるプロジェクトからこのプロジェクトへのプロジェクト参照を追加し、
     /// リビルドして、コンパイル エラーを防ぐ必要があります:

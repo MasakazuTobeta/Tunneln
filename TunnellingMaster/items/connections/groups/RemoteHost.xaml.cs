@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TunnellingMaster.items.remotehosts;
+using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster.items.connections.groups
 {

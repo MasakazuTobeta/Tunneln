@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TunnellingMaster"
         xmlns:items="clr-namespace:TunnellingMaster.items"
-        xmlns:localhosts="clr-namespace:TunnellingMaster.items.localhosts"
-        xmlns:remotehosts="clr-namespace:TunnellingMaster.items.remotehosts"
+        xmlns:localhosts="clr-namespace:TunnellingMaster.items.hosts"
+        xmlns:remotehosts="clr-namespace:TunnellingMaster.items.hosts"
         xmlns:connections="clr-namespace:TunnellingMaster.items.connections"
         mc:Ignorable="d"
         Title="Tunnelling Master" Height="450" Width="800">

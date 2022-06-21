@@ -7,7 +7,7 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:prop="clr-namespace:TunnellingMaster.Properties"
              xmlns:elements="clr-namespace:TunnellingMaster.items.elements"
-             xmlns:localhosts="clr-namespace:TunnellingMaster.items.localhosts"
+             xmlns:localhosts="clr-namespace:TunnellingMaster.items.hosts"
              mc:Ignorable="d" AllowDrop="False"
              d:DesignHeight="70.383" d:DesignWidth="103.57">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,0,0,0" x:Name="panel">
