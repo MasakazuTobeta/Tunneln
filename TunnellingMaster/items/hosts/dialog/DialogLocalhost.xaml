@@ -7,21 +7,21 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:ts="clr-namespace:WpfControlLibrary"
         xmlns:prop="clr-namespace:TunnellingMaster.Properties"
-        mc:Ignorable="d"
-        Title="Local Host Configuration" Height="208" Width="380">
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
+        Title="Local Host Configuration">
     <StackPanel VerticalAlignment="Center" Margin="0,10,0,10">
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <fa:ImageAwesome x:Name="icon_top" Icon="Laptop" Spin="False"  Margin="1,5,1,1" Height="25"/>
             <TextBox x:Name="name" Text="Name" HorizontalAlignment="Center" TextAlignment="Left" FontSize="20"
-                     Margin="10,1,1,1" VerticalAlignment="Bottom" MinWidth="250" MaxWidth="300"
+                     Margin="10,1,10,1" VerticalAlignment="Bottom" MinWidth="250" MaxWidth="300"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <TextBlock Text="IP or hostname:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
-            <TextBox x:Name="address" Text="127.0.0.1" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
-                     Margin="10,1,1,1" VerticalAlignment="Center" MinWidth="180" MaxWidth="300"
-                     InputMethod.IsInputMethodEnabled="False" Padding="0,0"
+            <TextBox x:Name="address" Text="127.168.0.1" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
+                     Margin="10,1,10,1" VerticalAlignment="Center" MinWidth="180" MaxWidth="300"
+                     InputMethod.IsInputMethodEnabled="False" Padding="0,0" TextChanged="address_TextChanged"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
@@ -29,8 +29,17 @@
             <ts:ToggleSwitch x:Name="add_to_hosts_file" Margin="5" Height="18"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
-            <TextBlock Text="Add a virtual adapter:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
-            <ts:ToggleSwitch x:Name="add_virtual_adapter" Margin="5" Height="18"/>
+            <DataGrid x:Name="const_pf_grid" AutoGenerateColumns="False" Margin="10,1,10,1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="listenport" Binding="{Binding listenport}"/>
+                    <DataGridTextColumn Header="connectport" Binding="{Binding connectport}"/>
+                    <DataGridCheckBoxColumn Header="enable" Binding="{Binding enable}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
+            <Button x:Name="ok" Content="OK" Width="100" Click="ok_Click"  Margin="10"/>
+            <Button x:Name="close" Content="Cancel" Width="100" Click="close_Click"  Margin="10"/>
         </StackPanel>
     </StackPanel>
 </Window>

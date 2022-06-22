@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:TunnellingMaster.items.hosts.dialog"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:prop="clr-namespace:TunnellingMaster.Properties"
-        mc:Ignorable="d"
-        Title="Remote Host Configuration" Height="243" Width="498">
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
+        Title="Remote Host Configuration">
     <StackPanel VerticalAlignment="Center" Margin="0,10,0,10">
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <fa:ImageAwesome x:Name="icon_top" Icon="Server" Spin="False"  Margin="1,5,1,1" Height="25"/>
             <TextBox x:Name="name" Text="Name" HorizontalAlignment="Center" TextAlignment="Left" FontSize="20"
-                     Margin="10,1,1,1" VerticalAlignment="Bottom" MinWidth="250" MaxWidth="300"
+                     Margin="10,1,10,1" VerticalAlignment="Bottom" MinWidth="250" MaxWidth="300"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
         </StackPanel>
@@ -33,26 +33,26 @@
             </StackPanel>
             <TextBlock Text="Address:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
             <TextBox x:Name="address" Text="127.0.0.1:8080" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
-                     Margin="10,1,1,1" VerticalAlignment="Center" MinWidth="200" MaxWidth="500"
+                     Margin="10,1,10,1" VerticalAlignment="Center" MinWidth="200" MaxWidth="300"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <TextBlock Text="User:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
             <TextBox x:Name="user" Text="" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
-                     Margin="10,1,1,1" VerticalAlignment="Center" MinWidth="100" MaxWidth="200"
+                     Margin="10,1,10,1" VerticalAlignment="Center" MinWidth="100" MaxWidth="200"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
             <TextBlock Text="Password:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
             <TextBox x:Name="pass" Text="" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
-                     Margin="10,1,1,1" VerticalAlignment="Center" MinWidth="100" MaxWidth="200"
+                     Margin="10,1,10,1" VerticalAlignment="Center" MinWidth="100" MaxWidth="200"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
         </StackPanel>
         <StackPanel x:Name="area_ssh_key" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <TextBlock Text="SSH key file:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
             <TextBox x:Name="key" Text="127.0.0.1:8080" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
-                     Margin="10,1,1,1" VerticalAlignment="Center" MinWidth="210" MaxWidth="300"
+                     Margin="10,1,10,1" VerticalAlignment="Center" MinWidth="210" MaxWidth="300"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
             <Button x:Name="select_key_file" Margin="5" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" Content="🔑" FontSize="13" Click="select_key_file_Click"/>

@@ -89,19 +89,33 @@ namespace TunnellingMaster.items.hosts
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
             int _idx = this.panel.Children.Count - 1;
-            IconLocalhost _new_item = new IconLocalhost();
+            IconLocalhost _new_item = null;
             List<string> _already_names = this.get_name_list();
+            string _new_name = "localhost";
 
             for (int _ii = 1; _ii <= 100; _ii++)
             {
-                if (!_already_names.Contains(_new_item.Text))
+                if (!_already_names.Contains(_new_name))
                 {
+                    _new_item = new IconLocalhost(_new_name);
                     break;
                 }
-                _new_item.Text = NameGenerator.PersonNames.Get(separator: ".");
+                _new_name = NameGenerator.PersonNames.Get(separator: ".");
             }
-
-            this.panel.Children.Insert(_idx, _new_item);
+            if (!(_new_item is null))
+            {
+                _new_item.OpenDialogLocalhost();
+                this.panel.Children.Insert(_idx, _new_item);
+                _new_item.IsEnabledChanged += (s, e) =>
+                {
+                    if (!(_new_item.enable))
+                    {
+                        /* 初回ダイアログでCancelボタンが押されたためアイコン除去 */
+                        this.panel.Children.Remove(_new_item);
+                        _new_item = null;
+                    }
+                };
+            }
 
         }
     }
