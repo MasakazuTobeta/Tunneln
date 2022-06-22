@@ -84,6 +84,29 @@ namespace TunnellingMaster.items.hosts.dialog
 
         private void ok_Click(object sender, RoutedEventArgs e)
         {
+            this.GetPortproxyInfo();
+
+            List<ConstPF> _gui = new List<ConstPF>();
+            List<ConstPF> _remove = new List<ConstPF>();
+            List<ConstPF> _add = new List<ConstPF>();
+
+            foreach (ConstPF _pf in this.const_pf_grid.ItemsSource)
+            {
+                _gui.Add(_pf);
+                if (!(this.netsh.Contains(_pf)))
+                {
+                    _add.Add(_pf);
+                }
+            }
+            foreach (ConstPF _pf in this.netsh)
+            {
+                if (!(_gui.Contains(_pf)))
+                {
+                    _remove.Add(_pf);
+                }
+            }
+
+            /*
             ServiceController[] scServices;
             scServices = ServiceController.GetServices();
             foreach (ServiceController scTemp in scServices)
@@ -93,6 +116,7 @@ namespace TunnellingMaster.items.hosts.dialog
                     Debug.WriteLine(scTemp.StartType);
                 }
             }
+            */
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
@@ -179,7 +203,7 @@ namespace TunnellingMaster.items.hosts.dialog
                                 listenport = int.Parse(port_list[0].ToString()),
                                 connectport = int.Parse(port_list[1].ToString()),
                                 enable = true,
-                                edited = false,
+                                edited = true,
                             });
                         }
                     }
