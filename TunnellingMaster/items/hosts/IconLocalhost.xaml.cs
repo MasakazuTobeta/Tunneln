@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -31,6 +32,8 @@ namespace TunnellingMaster.items.hosts
         private List<IconLocalhost> children = new List<IconLocalhost>();
         public bool enable = false;
         public string address = "localhost";
+        public bool hosts_file = true;
+        public bool virtual_adpt = false;
 
         public IconLocalhost(string Text = "localhost", IconLocalhost_State State = IconLocalhost_State.Resource)
         {
@@ -43,7 +46,7 @@ namespace TunnellingMaster.items.hosts
             }
             else
             {
-                this.address = this.Get_Local_Address_Random();
+                this.address = Common.GenerateRandomIPv4Address();
             }
 
             UpdateView();
@@ -199,12 +202,19 @@ namespace TunnellingMaster.items.hosts
             dialog.DialogLocalhost _dialog = new dialog.DialogLocalhost(this);
             _dialog.ok.Click += (s, e) =>
             {
-                /* ダイアログから回収してくる値 */
-                this.Text = _dialog.name.Text;
-                this.address = _dialog.address.Text;
-                this.enable = true;
-                _dialog.Close();
-                this.UpdateView();
+                if (_dialog.Verify)
+                {
+                    /* ダイアログから回収してくる値 */
+                    this.Text = _dialog.name.Text;
+                    this.address = _dialog.address.Text;
+                    this.hosts_file = _dialog.add_to_hosts_file.IsOn;
+                    this.virtual_adpt = _dialog.add_virtual_adapter.IsOn;
+
+                    /* お片付け */
+                    this.enable = true;
+                    _dialog.Close();
+                    this.UpdateView();
+                }
             };
             _dialog.Closed += (s, e) =>
             {
@@ -237,19 +247,42 @@ namespace TunnellingMaster.items.hosts
             e.Handled = true;
         }
 
-        private string Get_Local_Address_Random()
+
+        public void GetPortproxyInfo()
         {
-            Random r = new System.Random();
-            int no = r.Next(2, 2 << 16);
-            List<string> ret = new List<string> {"0", "0" , "0" , "127" };
-            int ii = 0;
-            foreach (string s in Regex.Split(no.ToString("X"), @"(?<=\G.{2})(?!$)"))
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            p.StartInfo.FileName = System.Environment.GetEnvironmentVariable("ComSpec");
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardInput = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = @"/c netsh interface portproxy show all /w";
+            p.Start();
+            string results = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            p.Close();
+
+            StringReader sr = new StringReader(results);
+            string text_line;
+            while ((text_line = sr.ReadLine()) != null)
             {
-                ret[ii] = Convert.ToInt32(s, 16).ToString();
-                ii++;
+                if (Regex.IsMatch(text_line, @"\s*\d+.\d+.\d+.\d+\s+\d+\s+\d+.\d+.\d+.\d+\s+\d+"))
+                {
+                    MatchCollection ip_list = Regex.Matches(text_line, @"\d+.\d+.\d+.\d+");
+                    foreach (Match _ip in ip_list)
+                    {
+                        text_line = text_line.Replace(_ip.ToString(), " ");
+                    }
+                    MatchCollection port_list = Regex.Matches(text_line, @"\d+");
+                    if ((ip_list.Count == 2) && (port_list.Count == 2))
+                    {
+                        if ((ip_list[0].ToString() == this.address) && (ip_list[1].ToString() == this.address))
+                        {
+                            Debug.WriteLine(text_line);
+                        }
+                    }
+                }
             }
-            ret.Reverse();
-            return string.Join(".", ret);
         }
     }
 }

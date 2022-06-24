@@ -27,46 +27,18 @@ namespace TunnellingMaster.items.hosts.dialog
     /// </summary>
     public partial class DialogLocalhost : Window
     {
-        public class ConstPF : INotifyPropertyChanged
-        {
-            public event PropertyChangedEventHandler PropertyChanged;
-            public int listenport { get; set; }
-            public int connectport { get; set; }
-            public bool edited { get; set; }
-            private bool _enable;
-            public bool enable
-            {
-                get
-                {
-                    return this._enable;
-                }
-                set
-                {
-                    if (this._enable == value) return;
-                    this.edited = true;
-                    this._enable = value;
-                    var h = PropertyChanged;
-                    if (h != null) h(this, new PropertyChangedEventArgs("enable"));
-                }
-            }
-        }
-
-        public List<ConstPF> netsh = new List<ConstPF>();
-
         public DialogLocalhost(IconLocalhost localhost = null)
         {
             InitializeComponent();
+            this.add_virtual_adapter.buttonToggle.Click += this.add_virtual_adapter_Click;
             if (!(localhost is null))
             {
                 this.name.Text = localhost.Text;
                 this.address.Text = localhost.address;
                 this.Color = localhost.Color;
+                this.add_to_hosts_file.IsOn = localhost.hosts_file;
+                this.add_virtual_adapter.IsOn = localhost.virtual_adpt;
             }
-            this.const_pf_grid.ItemsSource = new ObservableCollection<ConstPF> 
-                    {
-                        new ConstPF { listenport=445, connectport=4445, enable=false, edited=false },
-                    };
-            this.GetPortproxyInfo();
         }
 
         public Color Color
@@ -82,41 +54,35 @@ namespace TunnellingMaster.items.hosts.dialog
             }
         }
 
+        public bool Verify
+        {
+            get
+            {
+                bool is_ok = true;
+                IPAddress _ip = Common.GetIPv4Addressl(this.address.Text);
+                if (_ip is null)
+                {
+                    is_ok = false;
+                }
+                else
+                {
+                    bool _is_ok = !(this.add_virtual_adapter.IsOn && _ip.ToString().StartsWith("127."));
+                    if (!_is_ok)
+                    {
+                        this.label_add_virtual_adapter.Foreground = new SolidColorBrush(Colors.Red);
+                    }
+                    is_ok = _is_ok;
+                }
+                if (!is_ok)
+                {
+                    this.address.Foreground = new SolidColorBrush(Colors.Red);
+                }
+                return is_ok;
+            }
+        }
+
         private void ok_Click(object sender, RoutedEventArgs e)
         {
-            this.GetPortproxyInfo();
-
-            List<ConstPF> _gui = new List<ConstPF>();
-            List<ConstPF> _remove = new List<ConstPF>();
-            List<ConstPF> _add = new List<ConstPF>();
-
-            foreach (ConstPF _pf in this.const_pf_grid.ItemsSource)
-            {
-                _gui.Add(_pf);
-                if (!(this.netsh.Contains(_pf)))
-                {
-                    _add.Add(_pf);
-                }
-            }
-            foreach (ConstPF _pf in this.netsh)
-            {
-                if (!(_gui.Contains(_pf)))
-                {
-                    _remove.Add(_pf);
-                }
-            }
-
-            /*
-            ServiceController[] scServices;
-            scServices = ServiceController.GetServices();
-            foreach (ServiceController scTemp in scServices)
-            {
-                if (scTemp.ServiceName == "LanmanServer")
-                {
-                    Debug.WriteLine(scTemp.StartType);
-                }
-            }
-            */
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
@@ -124,92 +90,38 @@ namespace TunnellingMaster.items.hosts.dialog
 
         }
 
-        public int CountChar(string s, char c)
+        private void add_virtual_adapter_Click(object sender, RoutedEventArgs e)
         {
-            return s.Length - s.Replace(c.ToString(), "").Length;
-        }
-
-        private void address_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            IPAddress _ip;
-            if (IPAddress.TryParse(this.address.Text, out _ip))
+            if (this.add_virtual_adapter.IsOn)
             {
-                if (this.CountChar(this.address.Text, '.') == 3)
+                if (this.address.Text.StartsWith("127.") || this.address.Text.Length<=0)
                 {
-                    this.address.FontWeight = FontWeights.Bold;
-                    this.GetPortproxyInfo();
+                    this.address.Text = Common.GenerateRandomIPv4Address("169.254.0.0/16");
                 }
             }
             else
             {
+                this.label_add_virtual_adapter.Foreground = new SolidColorBrush(Colors.Black);
+                if (this.address.Text.Length <= 0)
+                {
+                    this.address.Text = Common.GenerateRandomIPv4Address("127.0.0.0/8");
+                }
+            }
+        }
+
+        private void address_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            IPAddress _ip = Common.GetIPv4AddressInLocal(this.address.Text);
+            if (_ip is null)
+            {
                 this.address.FontWeight = FontWeights.Normal;
             }
-        }
-
-        public void UpdateDataGrid()
-        {
-            if (!(this.const_pf_grid is null))
+            else
             {
-                if (!(this.const_pf_grid.ItemsSource is null))
-                {
-                    foreach (ConstPF _pf_netsh in this.netsh)
-                    {
-                        foreach (ConstPF _pf_gui in this.const_pf_grid.ItemsSource)
-                        {
-                            if (!(_pf_gui.edited) && (_pf_gui.listenport == _pf_netsh.listenport) && (_pf_gui.connectport == _pf_netsh.connectport))
-                            {
-                                _pf_gui.enable = _pf_netsh.enable;
-                            }
-                        }
-                    }
-                }
+                this.address.FontWeight = FontWeights.Bold;
+                this.address.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
 
-        public void GetPortproxyInfo()
-        {
-            this.netsh = new List<ConstPF>();
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
-            p.StartInfo.FileName = System.Environment.GetEnvironmentVariable("ComSpec");
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardInput = false;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = @"/c netsh interface portproxy show all /w";
-            p.Start();
-            string results = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
-            p.Close();
-
-            StringReader sr = new StringReader(results);
-            string text_line;
-            while ((text_line = sr.ReadLine()) != null)
-            {
-                Debug.WriteLine(text_line);
-                if (Regex.IsMatch(text_line, @"\s*\d+.\d+.\d+.\d+\s+\d+\s+\d+.\d+.\d+.\d+\s+\d+"))
-                {
-                    MatchCollection ip_list = Regex.Matches(text_line, @"\d+.\d+.\d+.\d+");
-                    foreach (Match _ip in ip_list)
-                    {
-                        text_line = text_line.Replace(_ip.ToString(), " ");
-                    }
-                    MatchCollection port_list = Regex.Matches(text_line, @"\d+");
-                    if ((ip_list.Count == 2) && (port_list.Count == 2))
-                    {
-                        if ((ip_list[0].ToString() == this.address.Text) && (ip_list[1].ToString() == this.address.Text))
-                        {
-                            this.netsh.Add(new ConstPF
-                            {
-                                listenport = int.Parse(port_list[0].ToString()),
-                                connectport = int.Parse(port_list[1].ToString()),
-                                enable = true,
-                                edited = true,
-                            });
-                        }
-                    }
-                }
-            }
-            this.UpdateDataGrid();
-        }
     }
 }

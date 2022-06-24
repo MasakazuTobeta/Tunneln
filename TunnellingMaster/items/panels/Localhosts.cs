@@ -59,7 +59,7 @@ namespace TunnellingMaster.items.hosts
             this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             this.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
             this.label.Content = "Localhosts:";
-            Setter.ButtonAdd(this.add_button);
+            Common.ButtonAdd(this.add_button);
             this.add_button.Click += Add_Button_Click;
             this.panel.Children.Add(this.label);
             this.panel.Children.Add((Button)this.add_button);

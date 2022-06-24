@@ -29,13 +29,8 @@
             <ts:ToggleSwitch x:Name="add_to_hosts_file" Margin="5" Height="18"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
-            <DataGrid x:Name="const_pf_grid" AutoGenerateColumns="False" Margin="10,1,10,1">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="listenport" Binding="{Binding listenport}"/>
-                    <DataGridTextColumn Header="connectport" Binding="{Binding connectport}"/>
-                    <DataGridCheckBoxColumn Header="enable" Binding="{Binding enable}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <TextBlock x:Name="label_add_virtual_adapter" Text="Add Virtual adapter:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
+            <ts:ToggleSwitch x:Name="add_virtual_adapter" Margin="5" Height="18"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <Button x:Name="ok" Content="OK" Width="100" Click="ok_Click"  Margin="10"/>
