@@ -6,9 +6,111 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using TunnellingMaster.items.connections;
 
 namespace TunnellingMaster.items
 {
+    class Settings
+    {
+        private class Connection
+        {
+            public Connection() { }
+
+        }
+        private class Localhost
+        {
+
+            public string _address;
+            public bool _hosts_file;
+            public bool _virtual_adpt;
+            public Guid _hash;
+
+            public Localhost(string address, bool hosts_file, bool virtual_adpt, Guid hash)
+            {
+                this._address = address;
+                this._hosts_file = hosts_file;
+                this._virtual_adpt = virtual_adpt;
+                this._hash = hash;
+            }
+        }
+
+        private class Remotehost
+        {
+            public Remotehost() { }
+
+        }
+
+        private List<Settings.Connection> _connections = new List<Settings.Connection>();
+        private List<Settings.Localhost> _localhosts = new List<Settings.Localhost>();
+        private List<Settings.Remotehost> _remotehosts = new List<Settings.Remotehost>();
+
+        public List<hosts.IconLocalhost> localhosts
+        {
+            set
+            {
+                foreach (hosts.IconLocalhost src in value)
+                {
+                    this._localhosts.Add(new Settings.Localhost(src.address,
+                                                                src.hosts_file,
+                                                                src.virtual_adpt,
+                                                                src.hash)
+                                         );
+                }
+            }
+            get
+            {
+                List<hosts.IconLocalhost> ret = new List<hosts.IconLocalhost>();
+                foreach (Settings.Localhost src in this._localhosts)
+                {
+                    hosts.IconLocalhost item = new hosts.IconLocalhost();
+                    item.address = src._address;
+                    item.hosts_file = src._hosts_file;
+                    item.virtual_adpt = src._virtual_adpt;
+                    item.hash = src._hash;
+                    ret.Add(item);
+                }
+                return ret;
+            }
+        }
+
+        public List<hosts.IconRemotehost> remotehosts
+        {
+            set
+            {
+                foreach (hosts.IconRemotehost _item in value)
+                {
+
+                }
+            }
+            get
+            {
+                List<hosts.IconRemotehost> ret = new List<hosts.IconRemotehost>();
+                return ret;
+            }
+        }
+
+
+        public List<ExpdConLocal> connections
+        {
+            set
+            {
+                foreach (ExpdConLocal _item in value) 
+                {
+
+                }
+            }
+            get
+            {
+                List<ExpdConLocal> ret = new List<ExpdConLocal>();
+                return ret;
+            }
+        }
+
+        public Settings()
+        {
+        }
+    }
+
     class Common
     {
         public static void ButtonAdd(Button button)

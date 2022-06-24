@@ -44,4 +44,5 @@
             <connections:Connections x:Name="stack_connections"/>
         </Grid>
     </Grid>
+
 </Window>

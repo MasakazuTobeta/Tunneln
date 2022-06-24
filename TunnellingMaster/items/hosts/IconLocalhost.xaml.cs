@@ -34,6 +34,7 @@ namespace TunnellingMaster.items.hosts
         public string address = "localhost";
         public bool hosts_file = true;
         public bool virtual_adpt = false;
+        public Guid hash = Guid.NewGuid();
 
         public IconLocalhost(string Text = "localhost", IconLocalhost_State State = IconLocalhost_State.Resource)
         {
