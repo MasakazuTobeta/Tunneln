@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,7 +33,8 @@ namespace TunnellingMaster.items.hosts.dialog
                 this.proxyType = remotehost.proxyType;
                 this.address.Text = remotehost.address;
                 this.user.Text = remotehost.user;
-                this.pass.Text = remotehost.pass;
+                this.pass.Password = remotehost.pass;
+                this.key.Text = remotehost.keyfile;
                 this.Color = remotehost.Color;
                 if (remotehost.Type == IconRemotehost_Type.Proxy)
                 {
@@ -51,6 +53,20 @@ namespace TunnellingMaster.items.hosts.dialog
                     this.area_ssh_key.Visibility = Visibility.Visible;
                     this.Title = "Remote Host Configuration";
                     break;
+            }
+        }
+
+        public bool Verify
+        {
+            get
+            {
+                bool is_ok = this.address.Text.Length >= 2;
+                if (this.address.Text.Length <= 2)
+                {
+                    this.address.Background = new SolidColorBrush(Colors.LightPink);
+                    is_ok = false;
+                }
+                return is_ok;
             }
         }
 

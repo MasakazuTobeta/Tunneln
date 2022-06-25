@@ -8,7 +8,7 @@
         xmlns:localhosts="clr-namespace:TunnellingMaster.items.hosts"
         xmlns:remotehosts="clr-namespace:TunnellingMaster.items.hosts"
         xmlns:connections="clr-namespace:TunnellingMaster.items.connections"
-        mc:Ignorable="d"
+        mc:Ignorable="d" KeyDown="Window_KeyDown"
         Title="Tunnelling Master" Height="450" Width="800">
     <Grid x:Name="root_grid" x:FieldModifier="public" Grid.Row="0" Grid.Column="0">
         <Grid>
@@ -25,7 +25,7 @@
                     <RowDefinition Height="43"/>
                 </Grid.RowDefinitions>
                 <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
-                <Grid Grid.Row="0" >
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100*"/>
                         <ColumnDefinition Width="4"/>

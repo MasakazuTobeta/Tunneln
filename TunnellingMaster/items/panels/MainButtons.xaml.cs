@@ -32,5 +32,30 @@ namespace TunnellingMaster.items
         {
 
         }
+
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+            }
+        }
+
+        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
+        }
     }
 }

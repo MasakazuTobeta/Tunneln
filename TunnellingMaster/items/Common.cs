@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -10,104 +11,56 @@ using TunnellingMaster.items.connections;
 
 namespace TunnellingMaster.items
 {
-    class Settings
+    // https://www.paveway.info/entry/2019/04/08/csharp_encrypt
+    class EncryptUtils
     {
-        private class Connection
+        private static readonly string AesIV = Common.GetHashedTextString("AesIV").Substring(0,16); // 半角16文字のランダムな文字列にします。
+        private static readonly string AesKey = Common.GetHashedTextString("AesKey").Substring(0, 32); // 半角32文字のランダムな文字列にします。
+        private static readonly int KeySize = 256;
+        private static readonly int BlockSize = 128;
+
+        private EncryptUtils() { }
+
+        public static string Encrypt(string value)
         {
-            public Connection() { }
-
-        }
-        private class Localhost
-        {
-
-            public string _address;
-            public bool _hosts_file;
-            public bool _virtual_adpt;
-            public Guid _hash;
-
-            public Localhost(string address, bool hosts_file, bool virtual_adpt, Guid hash)
-            {
-                this._address = address;
-                this._hosts_file = hosts_file;
-                this._virtual_adpt = virtual_adpt;
-                this._hash = hash;
-            }
+            if (value is null){ value = ""; }
+            var aes = GetAesManaged();
+            var byteValue = Encoding.UTF8.GetBytes(value);
+            var byteLength = byteValue.Length;
+            var encryptor = aes.CreateEncryptor();
+            var encryptValue = encryptor.TransformFinalBlock(byteValue, 0, byteLength);
+            var base64Value = Convert.ToBase64String(encryptValue);
+            return base64Value;
         }
 
-        private class Remotehost
+        public static string Decrypt(string encryptValue)
         {
-            public Remotehost() { }
-
+            string ret = null;
+            try
+            {
+                var aes = GetAesManaged();
+                var byteValue = Convert.FromBase64String(encryptValue);
+                var byteLength = byteValue.Length;
+                var decryptor = aes.CreateDecryptor();
+                var decryptValue = decryptor.TransformFinalBlock(byteValue, 0, byteLength);
+                ret = Encoding.UTF8.GetString(decryptValue);
+            }
+            catch
+            {
+            }
+            return ret;
         }
 
-        private List<Settings.Connection> _connections = new List<Settings.Connection>();
-        private List<Settings.Localhost> _localhosts = new List<Settings.Localhost>();
-        private List<Settings.Remotehost> _remotehosts = new List<Settings.Remotehost>();
-
-        public List<hosts.IconLocalhost> localhosts
+        private static AesManaged GetAesManaged()
         {
-            set
-            {
-                foreach (hosts.IconLocalhost src in value)
-                {
-                    this._localhosts.Add(new Settings.Localhost(src.address,
-                                                                src.hosts_file,
-                                                                src.virtual_adpt,
-                                                                src.hash)
-                                         );
-                }
-            }
-            get
-            {
-                List<hosts.IconLocalhost> ret = new List<hosts.IconLocalhost>();
-                foreach (Settings.Localhost src in this._localhosts)
-                {
-                    hosts.IconLocalhost item = new hosts.IconLocalhost();
-                    item.address = src._address;
-                    item.hosts_file = src._hosts_file;
-                    item.virtual_adpt = src._virtual_adpt;
-                    item.hash = src._hash;
-                    ret.Add(item);
-                }
-                return ret;
-            }
-        }
-
-        public List<hosts.IconRemotehost> remotehosts
-        {
-            set
-            {
-                foreach (hosts.IconRemotehost _item in value)
-                {
-
-                }
-            }
-            get
-            {
-                List<hosts.IconRemotehost> ret = new List<hosts.IconRemotehost>();
-                return ret;
-            }
-        }
-
-
-        public List<ExpdConLocal> connections
-        {
-            set
-            {
-                foreach (ExpdConLocal _item in value) 
-                {
-
-                }
-            }
-            get
-            {
-                List<ExpdConLocal> ret = new List<ExpdConLocal>();
-                return ret;
-            }
-        }
-
-        public Settings()
-        {
+            var aes = new AesManaged();
+            aes.KeySize = KeySize;
+            aes.BlockSize = BlockSize;
+            aes.Mode = CipherMode.CBC;
+            aes.IV = Encoding.UTF8.GetBytes(AesIV);
+            aes.Key = Encoding.UTF8.GetBytes(AesKey);
+            aes.Padding = PaddingMode.PKCS7;
+            return aes;
         }
     }
 
@@ -123,6 +76,21 @@ namespace TunnellingMaster.items
             button.Padding = new Thickness(0,0,0,0);
         }
 
+        // 文字列のハッシュ値（SHA256）を計算・取得する
+        public static string GetHashedTextString(string txt)
+        {
+            byte[] byteValues = Encoding.UTF8.GetBytes(txt);
+            SHA256 crypto256 = new SHA256CryptoServiceProvider();
+            byte[] hash256Value = crypto256.ComputeHash(byteValues);
+            StringBuilder hashedText = new StringBuilder();
+            for (int i = 0; i < hash256Value.Length; i++)
+            {
+                hashedText.AppendFormat("{0:X2}", hash256Value[i]);
+            }
+            return hashedText.ToString();
+        }
+
+        // IPv4文字列を2進数32桁の文字列へ変換する
         public static string IPv4ToBinary(string txt)
         {
             try
@@ -142,6 +110,7 @@ namespace TunnellingMaster.items
             }
         }
 
+        // 2進数32桁の文字列をIPv4文字列へ変換する
         public static string BinaryToIPv4(string txt)
         {
             try

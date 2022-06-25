@@ -35,13 +35,13 @@ namespace TunnellingMaster.items.hosts.dialog
             {
                 this.name.Text = localhost.Text;
                 this.address.Text = localhost.address;
-                this.Color = localhost.Color;
+                this.color = localhost.color;
                 this.add_to_hosts_file.IsOn = localhost.hosts_file;
                 this.add_virtual_adapter.IsOn = localhost.virtual_adpt;
             }
         }
 
-        public Color Color
+        public Color color
         {
             get
             {

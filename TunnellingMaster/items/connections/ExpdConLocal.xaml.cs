@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,23 @@ namespace TunnellingMaster.items.connections
     /// </summary>
     public partial class ExpdConLocal : Expander
     {
+        public string hash { 
+            get {
+                return Common.GetHashedTextString(this.ToString());
+            } 
+        }
+
+        public override string ToString()
+        {
+            return this.flow_panel.ToString();
+        }
+
+        public bool Equals(ExpdConLocal other)
+        {
+            if (other == null) return false;
+            return (this.ToString().Equals(other.ToString()));
+        }
+
         public string Message
         {
             get { return (string)GetValue(MessageProperty); }
@@ -92,6 +110,31 @@ namespace TunnellingMaster.items.connections
         private void Your_Port_Edit(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+            }
+        }
+
+        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
         }
     }
 }

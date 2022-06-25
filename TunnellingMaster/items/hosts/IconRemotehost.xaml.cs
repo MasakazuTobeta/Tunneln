@@ -36,10 +36,51 @@ namespace TunnellingMaster.items.hosts
         private IconRemotehost parent = null;
         private List<IconRemotehost> children = new List<IconRemotehost>();
         public dialog.ProxyType proxyType = 0;
-        public string address = "localhost";
-        public string user = "";
-        public string pass = "";
+        public string address = "";
+        public string user    = "";
+        public string pass    = "";
+        public string keyfile = "";
         public bool enable = false;
+
+        public bool Equals(IconLocalhost other)
+        {
+            if (other == null) return false;
+            return (this.Text.Equals(other.Text));
+        }
+
+        public override string ToString()
+        {
+            return this.Text;
+        }
+
+        public Dictionary<string, string> JsonDict
+        {
+            get
+            {
+                return new Dictionary<string, string>()
+                            {
+                              {"name"   , this.Text},
+                              {"address", this.address},
+                              {"user"   , this.user},
+                              {"pass"   , EncryptUtils.Encrypt(this.pass)},
+                              {"keyfile", this.keyfile},
+                              {"type"   , this.Type.ToString()},
+                              {"state"  , this.State.ToString()},
+                            };
+            }
+            set
+            {
+                string _val;
+                if (value.TryGetValue("name", out _val)) { this.Text = _val; };
+                if (value.TryGetValue("address", out _val)) { this.address = _val; };
+                if (value.TryGetValue("user", out _val)) { this.user = _val; };
+                if (value.TryGetValue("pass", out _val)) { this.pass = EncryptUtils.Decrypt(_val); };
+                if (value.TryGetValue("keyfile", out _val)) { this.keyfile = _val; };
+                if (value.TryGetValue("type", out _val)) { if (Enum.TryParse(_val, out IconRemotehost_Type _type)) { this.Type = _type; }; };
+                if (value.TryGetValue("state", out _val)) { if (Enum.TryParse(_val, out IconRemotehost_State _state)) { this.State = _state; }; };
+                this.UpdateView();
+            }
+        }
 
         public IconRemotehost(string Text = "remotehost", 
                               IconRemotehost_State State = IconRemotehost_State.Resource, 
@@ -130,6 +171,39 @@ namespace TunnellingMaster.items.hosts
                                   Convert.ToByte(rgb.B));
         }
 
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+                if (value)
+                {
+                    this.Background = new SolidColorBrush(Color.FromArgb(64, 161, 251, 142));
+                }
+                else
+                {
+                    this.Background = new SolidColorBrush(Color.FromArgb(0, 161, 251, 142));
+                }
+            }
+        }
+
+        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
+        }
+
         private void UpdateView()
         {
             switch (this.State)
@@ -175,12 +249,6 @@ namespace TunnellingMaster.items.hosts
             return _dst;
         }
 
-        public override string ToString()
-        {
-            var ret = new Dictionary<string, string>() { { "type", "remotehost" }, };
-            return ret.ToString();
-        }
-
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
@@ -195,22 +263,6 @@ namespace TunnellingMaster.items.hosts
             }
         }
 
-        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-        }
-
-        private void root_MouseMove(object sender, MouseEventArgs e)
-        {
-        }
-
-        private void root_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-        }
-
-        private void root_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-        }
-
         private void root_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             this.OpenDialogServer();
@@ -221,12 +273,29 @@ namespace TunnellingMaster.items.hosts
             dialog.DialogServer _dialog = new dialog.DialogServer(this);
             _dialog.ok.Click += (s, e) =>
             {
-                /* ダイアログから回収してくる値 */
-                this.Text = _dialog.name.Text;
-                this.address = _dialog.address.Text;
-                this.enable = true;
-                _dialog.Close();
-                this.UpdateView();
+                if (_dialog.Verify)
+                {
+                    IconRemotehost _item = this;
+                    while (!(_item.parent is null))
+                    {
+                        if (ReferenceEquals(_item, _item.parent))
+                        {
+                            break;
+                        }
+                        _item = _item.parent;
+                    }
+
+                    /* ダイアログから回収してくる値 */
+                    _item.Text = _dialog.name.Text;
+                    _item.address = _dialog.address.Text;
+                    _item.user = _dialog.user.Text;
+                    _item.pass = _dialog.pass.Password;
+                    _item.keyfile = _dialog.key.Text;
+
+                    _item.enable = true;
+                    _dialog.Close();
+                    _item.UpdateView();
+                }
             };
             _dialog.Closed += (s, e) =>
             {
@@ -240,17 +309,15 @@ namespace TunnellingMaster.items.hosts
         {
             Debug.Print("Set parent");
             IconRemotehost _parent = parent;
-            while (!(_parent.parent is null))
-            {
-                _parent = _parent.parent;
-            }
-            _parent.children.Add(this);
-
             this.parent = _parent;
             this.Text   = _parent.Text;
             this.Type   = _parent.Type;
             this.Color  = _parent.Color;
             this.State  = IconRemotehost_State.InFlow;
+            this.address = _parent.address;
+            this.user = _parent.user;
+            this.pass = _parent.pass;
+            this.keyfile = _parent.keyfile;
             this.UpdateView();
         }
 
@@ -270,6 +337,7 @@ namespace TunnellingMaster.items.hosts
                     }
                     else if (this.State != IconRemotehost_State.Resource)
                     {
+                        parent.children.Add(this);
                         this.SetParent(parent);
                     }
                 }

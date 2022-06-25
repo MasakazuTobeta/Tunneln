@@ -24,5 +24,17 @@ namespace TunnellingMaster.items.connections.groups
             InitializeComponent();
             this.panel.Children.Add(new IconRemotehost(Text, IconRemotehost_State.Blank, IconRemotehost_Type.Server));
         }
+
+        public override string ToString()
+        {
+            List<string> ret = new List<string>();
+            ret.Add(this.port.Text);
+            if (this.panel.Children.Count >= 2)
+            {
+                ret.Add(this.panel.Children[1].ToString());
+            }
+            return string.Join("->", ret); ;
+        }
     }
+
 }

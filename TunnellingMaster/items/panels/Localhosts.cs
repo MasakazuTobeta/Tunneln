@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -54,6 +55,45 @@ namespace TunnellingMaster.items.hosts
         public Label label = new Label();
         public Button add_button = new Button();
 
+        public List<Dictionary<string, string>> JsonDict
+        {
+            get
+            {
+                List<Dictionary<string, string>> _list = new List<Dictionary<string, string>>();
+                foreach (IconLocalhost _child in this.IconList)
+                {
+                    _list.Add(_child.JsonDict);
+                }
+                return _list;
+            }
+            set
+            {
+                foreach (Dictionary<string, string> _item in value)
+                {
+                    IconLocalhost _child = new IconLocalhost();
+                    _child.JsonDict = _item;
+                    foreach (IconLocalhost _latest in this.IconList)
+                    {
+                        if (_latest.Equals(_child))
+                        {
+                            _latest.JsonDict = _item;
+                            _child = null;
+                            break;
+                        }
+                    }
+                    if (!(_child is null))
+                    {
+                        this.panel.Children.Insert(this.panel.Children.Count - 1, _child);
+                    }
+                }
+            }
+        }
+
+        public void InsertLast(IconLocalhost _child)
+        {
+            this.panel.Children.Insert(this.panel.Children.Count - 1, _child);
+        }
+
         public Localhosts()
         {
             this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -64,31 +104,47 @@ namespace TunnellingMaster.items.hosts
             this.panel.Children.Add(this.label);
             this.panel.Children.Add((Button)this.add_button);
             this.Content = this.panel;
+        }
 
-            IconLocalhost _init_item = new IconLocalhost();
-            List<string> _already_names = this.get_name_list();
-            if (!_already_names.Contains(_init_item.Text))
+        public List<Dictionary<string, string>> Verification()
+        {
+            List<Dictionary<string, string>> ret = new List<Dictionary<string, string>>();
+            if (this.panel.Children.Count <= 2)
             {
-                this.panel.Children.Insert(this.panel.Children.Count - 1, _init_item);
+                this.InsertLast(new IconLocalhost());
+                ret.Add(new Dictionary<string, string>() { { "Info", "Added localhost template" } });
+            }
+            return ret;
+        }
+
+        public List<IconLocalhost> IconList
+        {
+            get {
+                List<IconLocalhost> ret = new List<IconLocalhost>();
+                foreach (UIElement _child in this.panel.Children)
+                {
+                    if (_child is IconLocalhost)
+                    {
+                        ret.Add((_child as IconLocalhost));
+                    }
+                }
+                return ret;
             }
         }
 
         public List<string> get_name_list()
         {
             List<string> _ret = new List<string>();
-            foreach (UIElement child in this.panel.Children)
+            foreach (IconLocalhost child in this.IconList)
             {
-                if (child is IconLocalhost)
-                {
-                    _ret.Add((child as IconLocalhost).Text);
-                }
+                _ret.Add(child.Text);
             }
             return _ret;
         }
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            int _idx = this.panel.Children.Count - 1;
+            this.root_MouseLeftButtonDown(null, null);
             IconLocalhost _new_item = null;
             List<string> _already_names = this.get_name_list();
             string _new_name = "localhost";
@@ -105,7 +161,7 @@ namespace TunnellingMaster.items.hosts
             if (!(_new_item is null))
             {
                 _new_item.OpenDialogLocalhost();
-                this.panel.Children.Insert(_idx, _new_item);
+                this.InsertLast(_new_item);
                 _new_item.IsEnabledChanged += (s, e) =>
                 {
                     if (!(_new_item.enable))
@@ -116,7 +172,32 @@ namespace TunnellingMaster.items.hosts
                     }
                 };
             }
-
         }
+
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+            }
+        }
+
+        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
+        }
+
     }
 }

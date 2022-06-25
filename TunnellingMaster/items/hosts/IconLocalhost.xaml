@@ -7,8 +7,7 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:prop="clr-namespace:TunnellingMaster.Properties"
              mc:Ignorable="d" x:Name="root" HorizontalAlignment="Center"
-             MouseLeftButtonDown="root_MouseLeftButtonDown" MouseDoubleClick="root_MouseDoubleClick"
-             MouseMove="root_MouseMove" MouseUp="root_MouseUp" MouseLeftButtonUp="root_MouseLeftButtonUp">
+             MouseLeftButtonDown="root_MouseLeftButtonDown" MouseDoubleClick="root_MouseDoubleClick">
 
     <!-- 色の定義 -->
     <UserControl.Resources>
@@ -25,9 +24,9 @@
     </UserControl.Resources>
 
     <!-- アイコンとテキスト -->
-    <StackPanel Orientation="Horizontal">
+    <StackPanel x:Name="root_panel" Orientation="Horizontal">
         <UserControl x:Name="icon_std" Style="{StaticResource StdIconStyle}" Height="50" Margin="5" MinWidth="100"
-             BorderBrush="#FF0A6300" BorderThickness="1.5" Background="#00000000">
+             BorderBrush="#FF0A6300" BorderThickness="1.5">
             <StackPanel>
                 <fa:ImageAwesome x:Name="icon1_image" Icon="Laptop" Spin="False"  Margin="1,5,1,1" Height="20" VerticalAlignment="Top"/>
                 <TextBox Text="{Binding Text, ElementName=root}" HorizontalAlignment="Center" TextAlignment="Center"

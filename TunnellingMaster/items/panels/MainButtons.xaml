@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TunnellingMaster"
-             xmlns:items="clr-namespace:TunnellingMaster.items"
+             xmlns:items="clr-namespace:TunnellingMaster.items" MouseLeftButtonDown="root_MouseLeftButtonDown"
              mc:Ignorable="d"  Orientation="Horizontal" HorizontalAlignment="Right" 
              d:DesignHeight="88.091" d:DesignWidth="792.189">
     <Button x:Name="bnt_load" Content=" Inport " Margin="5" FontSize="10"/>

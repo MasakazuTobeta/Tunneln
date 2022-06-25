@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -52,6 +53,15 @@ namespace TunnellingMaster.items.connections
         public Label label = new Label();
         public Button add_button = new Button();
 
+        public string JsonString
+        {
+            get
+            {
+                Dictionary<string, string> _dict = new Dictionary<string, string>();
+                return JsonSerializer.Serialize(_dict, new JsonSerializerOptions { WriteIndented = true });
+            }
+        }
+
         public Connections()
         {
             this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -62,21 +72,58 @@ namespace TunnellingMaster.items.connections
             this.panel.Children.Add(this.label);
             this.panel.Children.Add((Button)this.add_button);
             this.Content = this.panel;
+        }
+
+        public List<Dictionary<string, string>> Verification()
+        {
+            List<Dictionary<string, string>> ret = new List<Dictionary<string, string>>();
             if (this.panel.Children.Count <= 2)
             {
-                this.panel.Children.Insert(
-                    this.panel.Children.Count - 1,
-                    new ExpdConLocal()
-                    );
+                this.InsertLast(new ExpdConLocal());
+                ret.Add(new Dictionary<string, string>() { { "Info", "Added port forwarding template" } });
+            }
+            return ret;
+        }
+
+        public List<ExpdConLocal> ConnectionList
+        {
+            get
+            {
+                List<ExpdConLocal> ret = new List<ExpdConLocal>();
+                foreach (UIElement _item in this.panel.Children)
+                {
+                    if (_item is ExpdConLocal)
+                    {
+                        ret.Add((_item as ExpdConLocal));
+                    }
+                }
+                return ret;
+            }
+        }
+
+        public bool InsertLast(ExpdConLocal new_items)
+        {
+            foreach (ExpdConLocal _latest in this.ConnectionList)
+            {
+                if (_latest.Equals(new_items))
+                {
+                    new_items = null;
+                }
+            }
+            if (!(new_items is null))
+            {
+                this.panel.Children.Insert(this.panel.Children.Count - 1, new_items);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            this.panel.Children.Insert(
-                this.panel.Children.Count - 1,
-                new ExpdConLocal()
-                );
+            this.InsertLast(new ExpdConLocal());
         }
     }
 }

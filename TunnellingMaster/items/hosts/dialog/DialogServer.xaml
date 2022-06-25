@@ -44,7 +44,7 @@
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
             <TextBlock Text="Password:" FontSize="15" Margin="10,0,5,0" VerticalAlignment="Center"/>
-            <TextBox x:Name="pass" Text="" HorizontalAlignment="Center" TextAlignment="Left" FontSize="15"
+            <PasswordBox x:Name="pass" Password="" HorizontalAlignment="Center" FontSize="15"
                      Margin="10,1,10,1" VerticalAlignment="Center" MinWidth="100" MaxWidth="200"
                      InputMethod.IsInputMethodEnabled="False" Padding="0,0"
                      prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>

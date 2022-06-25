@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -34,7 +36,43 @@ namespace TunnellingMaster.items.hosts
         public string address = "localhost";
         public bool hosts_file = true;
         public bool virtual_adpt = false;
-        public Guid hash = Guid.NewGuid();
+        //public Guid hash = Guid.NewGuid();
+
+        public bool Equals(IconLocalhost other)
+        {
+            if (other == null) return false;
+            return (this.Text.Equals(other.Text));
+        }
+
+        public override string ToString()
+        {
+            return this.Text;
+        }
+
+        public Dictionary<string, string> JsonDict
+        {
+            get
+            {
+                return new Dictionary<string, string>()
+                            {
+                              {"name", this.Text},
+                              {"address", this.address},
+                              {"hosts_file", this.hosts_file.ToString()},
+                              {"virtual_adpt", this.virtual_adpt.ToString()},
+                              //{"hash", this.hash.ToString()},
+                              {"state", this.State.ToString()}
+                            };
+            }
+            set
+            {
+                if (value.TryGetValue("name", out string _name)) { this.Text = _name; };
+                if (value.TryGetValue("address", out string _address)) { this.address = _address; };
+                if (value.TryGetValue("hosts_file", out string _hosts)) { bool.TryParse(_hosts, out this.hosts_file); };
+                if (value.TryGetValue("virtual_adpt", out string _adpt)) { bool.TryParse(_adpt, out this.virtual_adpt); };
+                //if (value.TryGetValue("hash", out string _hash)) { Guid.TryParse(_hash, out this.hash); };
+                if (value.TryGetValue("state", out string _state)) { if (Enum.TryParse(_state, out IconLocalhost_State __state)) { this.State = __state; };};
+            }
+        }
 
         public IconLocalhost(string Text = "localhost", IconLocalhost_State State = IconLocalhost_State.Resource)
         {
@@ -49,7 +87,6 @@ namespace TunnellingMaster.items.hosts
             {
                 this.address = Common.GenerateRandomIPv4Address();
             }
-
             UpdateView();
         }
 
@@ -90,7 +127,7 @@ namespace TunnellingMaster.items.hosts
                                   Convert.ToByte(rgb.B));
         }
 
-        public Color Color
+        public Color color
         {
             get
             {
@@ -103,6 +140,7 @@ namespace TunnellingMaster.items.hosts
                 this.icon2_image.Foreground = _b;
             }
         }
+
 
         private void UpdateView()
         {
@@ -126,7 +164,7 @@ namespace TunnellingMaster.items.hosts
             }
             if (this.parent is null)
             {
-                this.Color = this.GetRandomColor();
+                this.color = this.GetRandomColor();
             }
             foreach (IconLocalhost _child in this.children)
             {
@@ -138,12 +176,6 @@ namespace TunnellingMaster.items.hosts
         {
             _dst.Text = _src.Text;
             return _dst;
-        }
-
-        public override string ToString()
-        {
-            var ret = new Dictionary<string, string>() { {"type", "localhost"},};
-            return ret.ToString();
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -160,8 +192,37 @@ namespace TunnellingMaster.items.hosts
             }
         }
 
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+                if (value)
+                {
+                    this.Background = new SolidColorBrush(Color.FromArgb(64, 161, 251, 142));
+                }
+                else
+                {
+                    this.Background = new SolidColorBrush(Color.FromArgb(0, 161, 251, 142));
+                }
+            }
+        }
+
         private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
         }
 
         private void root_MouseMove(object sender, MouseEventArgs e)
@@ -184,16 +245,18 @@ namespace TunnellingMaster.items.hosts
         private void SetParent(IconLocalhost parent)
         {
             Debug.Print("Set parent");
-            IconLocalhost _parent = parent;
-            while (!(_parent.parent is null))
-            {
-                _parent = _parent.parent;
-            }
-            _parent.children.Add(this);
-            this.parent = _parent;
-            this.Text   = _parent.Text;
-            this.Color  = _parent.Color;
+            this.parent = parent;
+            this.Text   = parent.Text;
+            this.color  = parent.color;
             this.State  = IconLocalhost_State.InFlow;
+            this.address = parent.address; 
+            this.hosts_file = parent.hosts_file; 
+            this.virtual_adpt = parent.virtual_adpt;
+            //this.hash = _parent.hash;
+            foreach (IconLocalhost _child in this.children)
+            {
+                _child.SetParent(parent);
+            }
             this.UpdateView();
         }
 
@@ -205,16 +268,23 @@ namespace TunnellingMaster.items.hosts
             {
                 if (_dialog.Verify)
                 {
+                    IconLocalhost _item = this;
+                    while (!(_item.parent is null))
+                    {
+                        if (ReferenceEquals(_item, _item.parent)){
+                            break;
+                        }
+                        _item = _item.parent;
+                    }
                     /* ダイアログから回収してくる値 */
-                    this.Text = _dialog.name.Text;
-                    this.address = _dialog.address.Text;
-                    this.hosts_file = _dialog.add_to_hosts_file.IsOn;
-                    this.virtual_adpt = _dialog.add_virtual_adapter.IsOn;
+                    _item.Text = _dialog.name.Text;
+                    _item.address = _dialog.address.Text;
+                    _item.hosts_file = _dialog.add_to_hosts_file.IsOn;
+                    _item.virtual_adpt = _dialog.add_virtual_adapter.IsOn;
 
-                    /* お片付け */
-                    this.enable = true;
+                    _item.enable = true;
                     _dialog.Close();
-                    this.UpdateView();
+                    _item.UpdateView();
                 }
             };
             _dialog.Closed += (s, e) =>
@@ -241,6 +311,7 @@ namespace TunnellingMaster.items.hosts
                     }
                     else if (this.State != IconLocalhost_State.Resource)
                     {
+                        parent.children.Add(this);
                         this.SetParent(parent);
                     }
                 }
@@ -285,5 +356,6 @@ namespace TunnellingMaster.items.hosts
                 }
             }
         }
+
     }
 }

@@ -26,5 +26,15 @@ namespace TunnellingMaster.items.connections.groups
             this.panel.Children.Add(new IconLocalhost(Text, IconLocalhost_State.Blank));
         }
 
+        public override string ToString()
+        {
+            List<string> ret = new List<string>();
+            ret.Add( "YourComputer:" + this.port.Text );
+            if (this.panel.Children.Count >= 2)
+            {
+                ret.Add(this.panel.Children[1].ToString());
+            }
+            return string.Join("->", ret); ;
+        }
     }
 }

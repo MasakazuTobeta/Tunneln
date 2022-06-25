@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -54,6 +55,62 @@ namespace TunnellingMaster.items.hosts
         public Label label = new Label();
         public Button add_button = new Button();
 
+        public List<Dictionary<string, string>> JsonDict
+        {
+            get
+            {
+                List<Dictionary<string, string>> _list = new List<Dictionary<string, string>>();
+                foreach (IconRemotehost _child in this.IconList)
+                {
+                    _list.Add(_child.JsonDict);
+                }
+                return _list;
+            }
+            set
+            {
+                foreach (Dictionary<string, string> _item in value)
+                {
+                    IconRemotehost _child = new IconRemotehost();
+                    _child.JsonDict = _item;
+                    foreach (IconRemotehost _latest in this.IconList)
+                    {
+                        if (_latest.Equals(_child))
+                        {
+                            _latest.JsonDict = _item;
+                            _child = null;
+                            break;
+                        }
+                    }
+                    if (!(_child is null))
+                    {
+                        this.panel.Children.Insert(this.panel.Children.Count - 1, _child);
+                    }
+                }
+            }
+        }
+
+        public List<Dictionary<string, string>> Verification()
+        {
+            List<Dictionary<string, string>> ret = new List<Dictionary<string, string>>();
+            return ret;
+        }
+
+        public List<IconRemotehost> IconList
+        {
+            get
+            {
+                List<IconRemotehost> ret = new List<IconRemotehost>();
+                foreach (UIElement _child in this.panel.Children)
+                {
+                    if (_child is IconRemotehost)
+                    {
+                        ret.Add((_child as IconRemotehost));
+                    }
+                }
+                return ret;
+            }
+        }
+
         public Proxies()
         {
             this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -81,6 +138,7 @@ namespace TunnellingMaster.items.hosts
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
+            this.root_MouseLeftButtonDown(null, null);
             int _idx = this.panel.Children.Count - 1;
             IconRemotehost _new_item = new IconRemotehost("proxy", IconRemotehost_State.Resource, IconRemotehost_Type.Proxy);
             _new_item.address = "127.0.0.1:8080";
@@ -106,6 +164,31 @@ namespace TunnellingMaster.items.hosts
                     _new_item = null;
                 }
             };
+        }
+
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+            }
+        }
+
+        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
         }
     }
 }

@@ -7,7 +7,7 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:ts="clr-namespace:WpfControlLibrary"
              xmlns:local="clr-namespace:TunnellingMaster.items.connections"
-             mc:Ignorable="d" x:Name="root"
+             mc:Ignorable="d" x:Name="root"  MouseLeftButtonDown="root_MouseLeftButtonDown"
              d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black">
     <Expander.Header>
         <StackPanel x:Name="header_panel" Orientation="Horizontal">

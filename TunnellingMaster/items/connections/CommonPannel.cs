@@ -55,6 +55,42 @@ namespace TunnellingMaster.items.connections
             this.Orientation = Orientation.Horizontal;
             this.AllowDrop = true;
             this.CanHorizontallyScroll = true;
+            this.MouseLeftButtonDown += this.root_MouseLeftButtonDown;
+        }
+
+        public override string ToString()
+        {
+            List<string> ret = new List<string>();
+            foreach (var _item in this.Children)
+            {
+                ret.Add(_item.ToString());
+            }
+            return string.Join("->", ret); ;
+        }
+
+        private bool _focused = false;
+        public bool Focused
+        {
+            get
+            {
+                return _focused;
+            }
+            set
+            {
+                this._focused = value;
+            }
+        }
+
+        private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Focused = true;
+            (Application.Current.MainWindow as MainWindow).SetSelectedElement(this);
+            (Application.Current.MainWindow as MainWindow).ChangedSelectedElement += this.ChangedSelectedElement;
+        }
+
+        private void ChangedSelectedElement(object sender, EventArgs e)
+        {
+            this.Focused = ReferenceEquals(this, sender);
         }
     }
 }
