@@ -13,3 +13,6 @@
 
 ## netsh interface portproxy
 https://pcvogel.sarakura.net/2020/07/30/32056
+
+## Samba
+https://www.nuget.org/packages/SMBLibrary/1.4.8
