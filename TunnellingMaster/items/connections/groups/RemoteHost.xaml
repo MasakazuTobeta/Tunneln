@@ -11,7 +11,7 @@
              d:DesignHeight="86.005" d:DesignWidth="137.637" Margin="0,0,5,0">
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" x:Name="panel">
-        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center" x:Name="arrow">
             <fa:ImageAwesome Icon="Exchange" Spin="False" Height="20" VerticalAlignment="Center"/>
             <TextBox x:Name="port" Text="2222" HorizontalAlignment="Center" TextAlignment="Center"
                      Margin="1" VerticalAlignment="Bottom"

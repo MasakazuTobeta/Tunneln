@@ -317,6 +317,12 @@ namespace TunnellingMaster.items.hosts
             _dialog.Show();
         }
 
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            base.OnDragEnter(e);
+            e.Handled = true;
+        }
+
         protected override void OnDrop(DragEventArgs e)
         {
             base.OnDrop(e);

@@ -204,24 +204,134 @@ namespace TunnellingMaster.items.connections
             this.Focused = ReferenceEquals(this, sender);
         }
 
+        private DragDropBorder _drop_point = null;
+
         private void connection_view_DragLeave(object sender, DragEventArgs e)
         {
-
+            if (!(this._drop_point is null))
+            {
+                if (true)//(!(this._drop_point.on_drag))
+                {
+                    this.flow_panel.Children.Remove(this._drop_point);
+                    this._drop_point = null;
+                }
+            }
         }
 
         private void connection_view_DragOver(object sender, DragEventArgs e)
         {
+            if (!(this._drop_point is null))
+            {
+                var _drop_pos = e.GetPosition(this.flow_panel);
+                foreach (object _item in this.flow_panel.Children)
+                {
+                    if (_item.GetType() == typeof(groups.RemoteHost))
+                    {
+                        StackPanel _ref_arrow = (_item as groups.RemoteHost).arrow;
+                        var _ref_pos = _ref_arrow.TranslatePoint(new Point(0, 0), this.flow_panel);
+                        if (_ref_pos.X + 25.0 > _drop_pos.X)
+                        {
+                            this.Insert_Flow_Item((_item as Control), this._drop_point);
+                            return;
+                        }
+                    }
+                }
+                this.Insert_Flow_Item(null, this._drop_point, true);
+            }
+        }
 
+        private partial class DragDropBorder : UserControl
+        {
+            private ExpdConLocal parent;
+            public bool on_drag = true;
+            private Border border = new Border();
+
+            public DragDropBorder(ExpdConLocal parent)
+            {
+                this.border.Height = 32;
+                this.border.Width = 2;
+                this.border.Margin = new Thickness(3);
+                this.border.BorderBrush = Brushes.Black;
+                this.border.BorderThickness = new Thickness(1);
+                this.AddChild(this.border);
+                this.AllowDrop = true;
+            }
+
+            protected override void OnDrop(DragEventArgs e)
+            {
+                base.OnDrop(e);
+                e.Handled = false;
+            }
+
+            protected override void OnDragEnter(DragEventArgs e)
+            {
+                base.OnDragEnter(e);
+                e.Handled = false;
+            }
         }
 
         private void connection_view_DragEnter(object sender, DragEventArgs e)
         {
-
+            if (e.Data.GetDataPresent("Object"))
+            {
+                var data = e.Data.GetData("Object");
+                if (typeof(IconRemotehost).IsInstanceOfType(data))
+                {
+                    if (this._drop_point is null)
+                    {
+                        this._drop_point = new DragDropBorder(this);
+                        this.flow_panel.Children.Add(this._drop_point);
+                    }
+                }
+            }
+            e.Handled = true;
         }
 
         private void connection_view_Drop(object sender, DragEventArgs e)
         {
+            if (!(this._drop_point is null))
+            {
+                if (e.Data.GetDataPresent("Object"))
+                {
+                    var data = e.Data.GetData("Object");
+                    if (typeof(IconRemotehost).IsInstanceOfType(data))
+                    {
+                        IconRemotehost _parent_host = (data as IconRemotehost);
+                        if (_parent_host.State == IconRemotehost_State.Resource)
+                        {
+                            groups.RemoteHost _insert_group = new groups.RemoteHost();
+                            IconRemotehost _insert_host = (_insert_group.panel.Children[1] as IconRemotehost);
+                            _insert_host.SetParent(_parent_host);
+                            _parent_host.SetChild(_insert_host);
+                            this.flow_panel.Children.Insert(this.flow_panel.Children.IndexOf(this._drop_point), _insert_group);
+                        }
+                    }
+                }
+                this.flow_panel.Children.Remove(this._drop_point);
+                this._drop_point = null;
+            }
+        }
 
+        private void Insert_Flow_Item(Control item1, Control item2, bool add_last = false)
+        {
+            int idx_now = this.flow_panel.Children.IndexOf(item2);
+            if (add_last)
+            {
+                if (!(idx_now == this.flow_panel.Children.Count - 1))
+                {
+                    this.flow_panel.Children.Remove(item2);
+                    this.flow_panel.Children.Add(item2);
+                }
+            }
+            else
+            {
+                int idx_next = this.flow_panel.Children.IndexOf(item1);
+                if ((idx_next < idx_now) || (idx_now + 1 < idx_next))
+                {
+                    this.flow_panel.Children.Remove(item2);
+                    this.flow_panel.Children.Insert(idx_next, item2);
+                }
+            }
         }
     }
 }

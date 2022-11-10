@@ -34,6 +34,7 @@ namespace TunnellingMaster.items.elements
         public ElmntArrow()
         {
             InitializeComponent();
+            this.AllowDrop = true;
         }
 
         private void port_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -49,6 +50,12 @@ namespace TunnellingMaster.items.elements
             {
                 e.Handled = true;
             }
+        }
+
+        protected override void OnDrop(DragEventArgs e)
+        {
+            base.OnDrop(e);
+            e.Handled = false;
         }
     }
 }

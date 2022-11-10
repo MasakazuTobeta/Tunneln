@@ -23,6 +23,7 @@ namespace TunnellingMaster.items.connections.groups
         {
             InitializeComponent();
             this.panel.Children.Add(new IconRemotehost(Text, IconRemotehost_State.Blank, IconRemotehost_Type.Server));
+            this.AllowDrop = true;
         }
 
         public override string ToString()
@@ -34,6 +35,12 @@ namespace TunnellingMaster.items.connections.groups
                 ret.Add(this.panel.Children[1].ToString());
             }
             return string.Join("->", ret); ;
+        }
+
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            base.OnDragEnter(e);
+            e.Handled = false;
         }
     }
 

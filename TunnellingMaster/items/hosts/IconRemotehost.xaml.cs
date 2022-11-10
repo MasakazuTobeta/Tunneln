@@ -339,6 +339,12 @@ namespace TunnellingMaster.items.hosts
             this.children.Add(child);
         }
 
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            base.OnDragEnter(e);
+            e.Handled = true;
+        }
+
         protected override void OnDrop(DragEventArgs e)
         {
             base.OnDrop(e);
