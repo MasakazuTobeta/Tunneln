@@ -34,8 +34,9 @@ namespace TunnellingMaster.items.hosts
         private List<IconLocalhost> children = new List<IconLocalhost>();
         public bool enable = false;
         public string address = "localhost";
-        public bool hosts_file = true;
+        public bool hosts_file = false;
         public bool virtual_adpt = false;
+        private MyHost _my_host;
         //public Guid hash = Guid.NewGuid();
 
         public bool Equals(IconLocalhost other)
@@ -46,37 +47,40 @@ namespace TunnellingMaster.items.hosts
 
         public override string ToString()
         {
-            return this.Text;
+            List<string> _tmp = new List<string>();
+            _tmp.Add(this.Text); // 0
+            _tmp.Add(this.State.ToString()); // 1
+            _tmp.Add(this.address); // 2
+            _tmp.Add(this.hosts_file.ToString()); // 3
+            _tmp.Add(this.virtual_adpt.ToString()); // 4
+            return string.Join(Config.Config.SEPARATOR, _tmp);
         }
 
-        public Dictionary<string, string> JsonDict
+        public IconLocalhost(List<string> config)
         {
-            get
-            {
-                return new Dictionary<string, string>()
-                            {
-                              {"name", this.Text},
-                              {"address", this.address},
-                              {"hosts_file", this.hosts_file.ToString()},
-                              {"virtual_adpt", this.virtual_adpt.ToString()},
-                              //{"hash", this.hash.ToString()},
-                              {"state", this.State.ToString()}
-                            };
-            }
-            set
-            {
-                if (value.TryGetValue("name", out string _name)) { this.Text = _name; };
-                if (value.TryGetValue("address", out string _address)) { this.address = _address; };
-                if (value.TryGetValue("hosts_file", out string _hosts)) { bool.TryParse(_hosts, out this.hosts_file); };
-                if (value.TryGetValue("virtual_adpt", out string _adpt)) { bool.TryParse(_adpt, out this.virtual_adpt); };
-                //if (value.TryGetValue("hash", out string _hash)) { Guid.TryParse(_hash, out this.hash); };
-                if (value.TryGetValue("state", out string _state)) { if (Enum.TryParse(_state, out IconLocalhost_State __state)) { this.State = __state; };};
-            }
+            InitializeComponent();
+            this._my_host = new MyHost((object)this);
+
+            this.Text = config[0];
+
+            IconLocalhost_State _state = IconLocalhost_State.Resource;
+            Enum.TryParse(config[1], out _state);
+            this.State = _state;
+
+            this.address = config[2];
+
+            this.hosts_file = System.Convert.ToBoolean(config[3]);
+
+            this.virtual_adpt = System.Convert.ToBoolean(config[4]);
+
+            UpdateView();
         }
 
         public IconLocalhost(string Text = "localhost", IconLocalhost_State State = IconLocalhost_State.Resource)
         {
             InitializeComponent();
+            this._my_host = new MyHost((object)this);
+
             this.Text = Text;
             this.State = State;
             if (Text=="localhost")
@@ -89,6 +93,7 @@ namespace TunnellingMaster.items.hosts
             }
             UpdateView();
         }
+
 
         public string Text
         {
@@ -141,6 +146,13 @@ namespace TunnellingMaster.items.hosts
             }
         }
 
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                this.UpdateView();
+            }
+        }
 
         private void UpdateView()
         {
@@ -170,6 +182,11 @@ namespace TunnellingMaster.items.hosts
             {
                 _child.SetParent(this);
             }
+        }
+
+        internal MyHost MyHost()
+        {
+            return this._my_host;
         }
 
         public IconLocalhost copy_properties(IconLocalhost _src, IconLocalhost _dst)
@@ -242,7 +259,7 @@ namespace TunnellingMaster.items.hosts
             this.OpenDialogLocalhost();
         }
 
-        private void SetParent(IconLocalhost parent)
+        public void SetParent(IconLocalhost parent)
         {
             Debug.Print("Set parent");
             this.parent = parent;
@@ -258,6 +275,11 @@ namespace TunnellingMaster.items.hosts
                 _child.SetParent(parent);
             }
             this.UpdateView();
+        }
+
+        public void SetChild(IconLocalhost child)
+        {
+            this.children.Add(child);
         }
 
 
@@ -357,5 +379,35 @@ namespace TunnellingMaster.items.hosts
             }
         }
 
+        private void Context_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            this.Remove_Me();
+        }
+
+        private void Remove_Me()
+        {
+            switch (this.State)
+            {
+                case IconLocalhost_State.Resource:
+                    (this.Parent as StackPanel).Children.Remove(this);
+                    MyHost _item = new MyHost(this);
+                    (Application.Current.MainWindow as MainWindow).Remove_Host(_item);
+                    foreach (IconLocalhost _child in this.children)
+                    {
+                        _child.Remove_Me();
+                    }
+                    break;
+                default:
+                    this.parent = null;
+                    this.State = IconLocalhost_State.Blank;
+                    this.UpdateView();
+                    break;
+            }
+        }
+
+        private void Context_Edit_Click(object sender, RoutedEventArgs e)
+        {
+            this.OpenDialogLocalhost();
+        }
     }
 }

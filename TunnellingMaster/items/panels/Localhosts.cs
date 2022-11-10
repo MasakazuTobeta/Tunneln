@@ -55,43 +55,20 @@ namespace TunnellingMaster.items.hosts
         public Label label = new Label();
         public Button add_button = new Button();
 
-        public List<Dictionary<string, string>> JsonDict
+        internal void Add(IconLocalhost item)
         {
-            get
+            if (!(this.panel.Children.Contains(item)))
             {
-                List<Dictionary<string, string>> _list = new List<Dictionary<string, string>>();
-                foreach (IconLocalhost _child in this.IconList)
-                {
-                    _list.Add(_child.JsonDict);
-                }
-                return _list;
-            }
-            set
-            {
-                foreach (Dictionary<string, string> _item in value)
-                {
-                    IconLocalhost _child = new IconLocalhost();
-                    _child.JsonDict = _item;
-                    foreach (IconLocalhost _latest in this.IconList)
-                    {
-                        if (_latest.Equals(_child))
-                        {
-                            _latest.JsonDict = _item;
-                            _child = null;
-                            break;
-                        }
-                    }
-                    if (!(_child is null))
-                    {
-                        this.panel.Children.Insert(this.panel.Children.Count - 1, _child);
-                    }
-                }
+                this.InsertLast(item);
             }
         }
 
-        public void InsertLast(IconLocalhost _child)
+        public void InsertLast(IconLocalhost item)
         {
-            this.panel.Children.Insert(this.panel.Children.Count - 1, _child);
+            if (!(this.panel.Children.Contains(item)))
+            {
+                this.panel.Children.Insert(this.panel.Children.Count - 1, item);
+            }
         }
 
         public Localhosts()
@@ -169,6 +146,10 @@ namespace TunnellingMaster.items.hosts
                         /* 初回ダイアログでCancelボタンが押されたためアイコン除去 */
                         this.panel.Children.Remove(_new_item);
                         _new_item = null;
+                    }
+                    else
+                    {
+                        (Application.Current.MainWindow as MainWindow).Add_Host(_new_item.MyHost());
                     }
                 };
             }

@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ColorHelper;
+using TunnellingMaster.items.connections;
 
 namespace TunnellingMaster.items.hosts
 {
@@ -41,6 +42,7 @@ namespace TunnellingMaster.items.hosts
         public string pass    = "";
         public string keyfile = "";
         public bool enable = false;
+        private MyHost _my_host;
 
         public bool Equals(IconLocalhost other)
         {
@@ -50,36 +52,41 @@ namespace TunnellingMaster.items.hosts
 
         public override string ToString()
         {
-            return this.Text;
+            List<string> _tmp = new List<string>();
+            _tmp.Add(this.Text); // 0
+            _tmp.Add(this.Type.ToString()); // 1
+            _tmp.Add(this.State.ToString()); // 2
+            _tmp.Add(this.address); // 3
+            _tmp.Add(this.user); // 4
+            _tmp.Add(this.keyfile); // 5
+            _tmp.Add(EncryptUtils.Encrypt(this.pass)); // 6
+            return string.Join(Config.Config.SEPARATOR, _tmp);
         }
 
-        public Dictionary<string, string> JsonDict
+        public IconRemotehost(List<string> config)
         {
-            get
-            {
-                return new Dictionary<string, string>()
-                            {
-                              {"name"   , this.Text},
-                              {"address", this.address},
-                              {"user"   , this.user},
-                              {"pass"   , EncryptUtils.Encrypt(this.pass)},
-                              {"keyfile", this.keyfile},
-                              {"type"   , this.Type.ToString()},
-                              {"state"  , this.State.ToString()},
-                            };
-            }
-            set
-            {
-                string _val;
-                if (value.TryGetValue("name", out _val)) { this.Text = _val; };
-                if (value.TryGetValue("address", out _val)) { this.address = _val; };
-                if (value.TryGetValue("user", out _val)) { this.user = _val; };
-                if (value.TryGetValue("pass", out _val)) { this.pass = EncryptUtils.Decrypt(_val); };
-                if (value.TryGetValue("keyfile", out _val)) { this.keyfile = _val; };
-                if (value.TryGetValue("type", out _val)) { if (Enum.TryParse(_val, out IconRemotehost_Type _type)) { this.Type = _type; }; };
-                if (value.TryGetValue("state", out _val)) { if (Enum.TryParse(_val, out IconRemotehost_State _state)) { this.State = _state; }; };
-                this.UpdateView();
-            }
+            InitializeComponent();
+            this._my_host = new MyHost((object)this);
+
+            this.Text = config[0];
+
+            IconRemotehost_Type _type = IconRemotehost_Type.Server;
+            Enum.TryParse(config[1], out _type);
+            this.Type = _type;
+
+            IconRemotehost_State _state = IconRemotehost_State.Resource;
+            Enum.TryParse(config[2], out _state);
+            this.State = _state;
+
+            this.address = config[3];
+
+            this.user = config[4];
+
+            this.keyfile = config[5];
+
+            this.pass = EncryptUtils.Decrypt(config[6]);
+
+            UpdateView();
         }
 
         public IconRemotehost(string Text = "remotehost", 
@@ -87,6 +94,7 @@ namespace TunnellingMaster.items.hosts
                               IconRemotehost_Type Type = IconRemotehost_Type.Server)
         {
             InitializeComponent();
+            this._my_host = new MyHost((object)this);
             this.Text  = Text;
             this.State = State;
             this.Type  = Type;
@@ -142,6 +150,11 @@ namespace TunnellingMaster.items.hosts
                 this.icon1_image.Foreground = _b;
                 this.icon2_image.Foreground = _b;
             }
+        }
+
+        internal MyHost MyHost()
+        {
+            return this._my_host;
         }
 
         public FontAwesome.WPF.FontAwesomeIcon Icon
@@ -305,7 +318,7 @@ namespace TunnellingMaster.items.hosts
             _dialog.Show();
         }
 
-        private void SetParent(IconRemotehost parent)
+        public void SetParent(IconRemotehost parent)
         {
             Debug.Print("Set parent");
             IconRemotehost _parent = parent;
@@ -319,6 +332,11 @@ namespace TunnellingMaster.items.hosts
             this.pass = _parent.pass;
             this.keyfile = _parent.keyfile;
             this.UpdateView();
+        }
+
+        public void SetChild(IconRemotehost child)
+        {
+            this.children.Add(child);
         }
 
         protected override void OnDrop(DragEventArgs e)
@@ -343,6 +361,62 @@ namespace TunnellingMaster.items.hosts
                 }
             }
             e.Handled = true;
+        }
+
+        internal bool IsProxy()
+        {
+            return (this.Type == IconRemotehost_Type.Proxy);
+        }
+
+        internal bool IsServer()
+        {
+            return (this.Type == IconRemotehost_Type.Server);
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                this.UpdateView();
+            }
+        }
+
+        private void Context_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            this.Remove_Me();
+        }
+
+        private void Remove_Me()
+        {
+            switch (this.State)
+            {
+                case IconRemotehost_State.Resource:
+                    (this.Parent as StackPanel).Children.Remove(this);
+                    MyHost _item = new MyHost(this);
+                    (Application.Current.MainWindow as MainWindow).Remove_Host(_item);
+                    foreach (IconRemotehost _child in this.children)
+                    {
+                        _child.Remove_Me();
+                    }
+                    break;
+                case IconRemotehost_State.InFlow:
+                    this.parent = null;
+                    this.State = IconRemotehost_State.Blank;
+                    this.UpdateView();
+                    break;
+                default:
+                    if ((this.Parent as StackPanel).Parent.GetType() == typeof(items.connections.groups.RemoteHost))
+                    {
+                        items.connections.groups.RemoteHost _flow_icon = (items.connections.groups.RemoteHost)(this.Parent as StackPanel).Parent;
+                        (_flow_icon.Parent as StackPanel).Children.Remove(_flow_icon);
+                    }
+                    break;
+            }
+        }
+
+        private void Context_Edit_Click(object sender, RoutedEventArgs e)
+        {
+            this.OpenDialogServer();
         }
     }
 }

@@ -69,7 +69,7 @@ namespace TunnellingMaster.Properties
                 tb.SelectAll();
             }
 
-            e.Handled = true;
+            //e.Handled = true;
         }
     }
 }

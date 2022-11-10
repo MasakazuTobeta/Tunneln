@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster.items.connections
 {
@@ -60,5 +61,6 @@ namespace TunnellingMaster.items.connections
             this.Children.Add(new groups.RemoteHost("jump\r\nhost"));
             this.Children.Add(new groups.RemoteHost("remote\r\nhost"));
         }
+
     }
 }

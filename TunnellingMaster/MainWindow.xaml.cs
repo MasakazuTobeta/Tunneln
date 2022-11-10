@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using TunnellingMaster.items;
+using TunnellingMaster.items.connections;
 using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster
@@ -27,11 +28,14 @@ namespace TunnellingMaster
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static string AUTO_SAVE_FILE = @"./settings.json"; 
-        private static TimeSpan AUTO_SAVE_FREQ = new TimeSpan(0, 5, 0);
-        private DispatcherTimer _timer;
+        private static string AUTO_SAVE_FILE = @"./settings.csv";
+        public TimeSpan AUTO_SAVE_FREQ = new TimeSpan(0, 1, 0);
+
         public event EventHandler ChangedSelectedElement;
 
+        private Config.Config _config = new Config.Config(AUTO_SAVE_FILE);
+        private MyHosts _my_hosts = new MyHosts();
+        private MyConnections _my_connections = new MyConnections();
 
         public MainWindow()
         {
@@ -44,56 +48,99 @@ namespace TunnellingMaster
             this.ChangedSelectedElement?.Invoke(sender, EventArgs.Empty);
         }
 
+        public void Add_Host(MyHost _item)
+        {
+            Debug.Print(_item.ToString());
+            this._my_hosts.Add(_item);
+            this._config.Add((object)_item);
+        }
+
+        public void Add_Connection(MyConnection _item)
+        {
+            Debug.Print(_item.ToString());
+            this._my_connections.Add(_item);
+            this._config.Add((object)_item);
+        }
+
+        public void Remove_Host(MyHost _item)
+        {
+            Debug.Print(_item.ToString());
+            this._my_hosts.Remove(_item);
+            this._config.Remove((object)_item);
+        }
+
+        public void Remove_Connection(MyConnection _item)
+        {
+            Debug.Print(_item.ToString());
+            this._my_connections.Remove(_item);
+            this._config.Remove((object)_item);
+        }
+
+        public MyHost Find_Host(string name, string type)
+        {
+            return this._my_hosts.Find(name, type);
+        }
+
+        public void Start_Connection(MyConnection _item)
+        {
+            Debug.Print(_item.ToString());
+        }
+
+        public void Start_Connection()
+        {
+            List<Exception> ex = new List<Exception>();
+            foreach (MyConnection _item in this._my_connections)
+            {
+                try
+                {
+                    this.Start_Connection(_item);
+                }
+                catch (Exception _e)
+                {
+                    ex.Add(_e);
+                }
+            }
+            if (ex.Count > 0)
+            {
+                throw new AggregateException("Multiple Errors Occured", ex);
+            }
+        }
+
+        public void Stop_Connection(MyConnection _item)
+        {
+            Debug.Print(_item.ToString());
+        }
+
+        public void Stop_Connection()
+        {
+            List<Exception> ex = new List<Exception>();
+            foreach (MyConnection _item in this._my_connections)
+            {
+                try
+                {
+                    this.Stop_Connection(_item);
+                }
+                catch (Exception _e)
+                {
+                    ex.Add(_e);
+                }
+            }
+            if (ex.Count > 0)
+            {
+                throw new AggregateException("Multiple Errors Occured", ex);
+            }
+        }
+
+
         private void MyInitialize(object sender, RoutedEventArgs e)
         {
-            this.Load();
-            this.stack_localhosts.Verification();
-            this.stack_proxies.Verification();
-            this.stack_remotehosts.Verification();
-            this.stack_connections.Verification();
-            this.SetupTimer();
+            this._config.Load();
             if (this.ChangedSelectedElement != null)
             {
                 this.ChangedSelectedElement(sender, EventArgs.Empty);
             }
             this.MouseLeftButtonDown += this.root_MouseLeftButtonDown;
-        }
-
-        public void Load()
-        {
-            string text = "";
-            try{ using (StreamReader sr = new StreamReader(AUTO_SAVE_FILE)){ text = sr.ReadToEnd(); } }
-            catch (Exception e){ Debug.WriteLine(e.Message);}
-            this.JsonDict = JsonSerializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(text);
-        }
-
-        public Dictionary<string, List<Dictionary<string, string>>> JsonDict
-        {
-            get
-            {
-                return new Dictionary<string, List<Dictionary<string, string>>>()
-                            {
-                              {"localhosts", this.stack_localhosts.JsonDict},
-                              {"proxies", this.stack_proxies.JsonDict},
-                              {"remotehosts", this.stack_remotehosts.JsonDict}
-//                              {"connections", this.stack_connections.JsonDict},
-                            };
-            }
-            set
-            {
-                List<Dictionary<string, string>> _vals;
-                if (value.TryGetValue("localhosts", out _vals)) { this.stack_localhosts.JsonDict = _vals; };
-                if (value.TryGetValue("proxies", out _vals)) { this.stack_proxies.JsonDict = _vals; };
-                if (value.TryGetValue("remotehosts", out _vals)) { this.stack_remotehosts.JsonDict = _vals; };
-                //if (value.TryGetValue("connections", out _vals)) { this.stack_connections.JsonDict = _vals; };
-
-            }
-        }
-
-        public void Save()
-        {
-            string json = JsonSerializer.Serialize(this.JsonDict, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(AUTO_SAVE_FILE, json);
+            this._config.EnableAutoSave(this.AUTO_SAVE_FREQ);
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -101,40 +148,15 @@ namespace TunnellingMaster
             if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 /* Ctrl+ S */
-                this.Save();
+                this._config.Save();
             }
-        }
-
-        private void TimerMethod(object sender, EventArgs e)
-        {
-            this.Save();
-        }
-
-        private void SetupTimer()
-        {
-            _timer = new DispatcherTimer();
-            _timer.Interval = AUTO_SAVE_FREQ;
-            _timer.Tick += new EventHandler(TimerMethod);
-            _timer.Start();
-            this.Closing += new CancelEventHandler(StopTimer);
-        }
-
-        private void StopTimer(object sender, CancelEventArgs e)
-        {
-            _timer.Stop();
         }
 
         private bool _focused = false;
         public bool Focused
         {
-            get
-            {
-                return _focused;
-            }
-            set
-            {
-                this._focused = value;
-            }
+            get{return _focused;}
+            set{this._focused = value;}
         }
 
         private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

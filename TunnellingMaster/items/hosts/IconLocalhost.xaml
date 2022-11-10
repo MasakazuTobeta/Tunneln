@@ -33,7 +33,9 @@
                  Margin="2" VerticalAlignment="Bottom"
                  Background="{x:Null}" BorderBrush="{x:Null}"
                  InputMethod.IsInputMethodEnabled="False" Padding="0,0" 
-                 prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
+                 prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"
+                 KeyDown="TextBox_KeyDown"
+                 Cursor="Arrow"/>
             </StackPanel>
         </UserControl>
         <Border x:Name="icon_blank" Height="50" AllowDrop="True" MinWidth="50"
@@ -143,5 +145,11 @@
                  prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
             </StackPanel>
         </Border>
+        <StackPanel.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Edit" x:Name="Context_Edit" Click="Context_Edit_Click"/>
+                <MenuItem Header="Remove" x:Name="Context_Remove"  Click="Context_Remove_Click"/>
+            </ContextMenu>
+        </StackPanel.ContextMenu>
     </StackPanel>
 </UserControl>

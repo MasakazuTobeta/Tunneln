@@ -59,7 +59,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
             <Button x:Name="ok" Content="OK" Width="100" Click="ok_Click" Margin="10"/>
-            <Button x:Name="close" Content="Cancel" Width="100" Click="close_Click" Margin="10"/>
+            <Button x:Name="close" Content="Cancel" Width="100" Click="close_Click" Margin="10" Cursor="Hand"/>
         </StackPanel>
     </StackPanel>
 </Window>

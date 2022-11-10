@@ -6,12 +6,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:ts="clr-namespace:WpfControlLibrary"
+             xmlns:prop="clr-namespace:TunnellingMaster.Properties"
              xmlns:local="clr-namespace:TunnellingMaster.items.connections"
              mc:Ignorable="d" x:Name="root"  MouseLeftButtonDown="root_MouseLeftButtonDown"
              d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black">
     <Expander.Header>
         <StackPanel x:Name="header_panel" Orientation="Horizontal">
-            <TextBlock x:Name="title" Text="{Binding Title, ElementName=root}" Margin="5" Height="18" Width="150"/>
+            <TextBox x:Name="title" 
+                       Text="{Binding Title, ElementName=root}" 
+                       Background="{x:Null}"
+                       BorderBrush="{x:Null}"
+                       Height="18"
+                       Width="150" 
+                       Margin="2"
+                       Padding="0,0"
+                       TextAlignment="Left"
+                       VerticalAlignment="Center"
+                       Cursor="Arrow"
+                       prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"                       
+            />
             <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18"/>
             <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18"/>
             <Border BorderThickness="0" Width="100"/>
@@ -27,7 +40,7 @@
             <ComboBoxItem x:Name="type_samba" Content=" [Template] Samba (LPF)" IsEnabled="False"/>
             <ComboBoxItem x:Name="type_socks" Content=" [Template] SOCKS proxy (DPF)" IsEnabled="False"/>
         </ComboBox>
-        <ScrollViewer x:Name="connection_view" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto"/>
+        <ScrollViewer x:Name="connection_view" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" AllowDrop="True" DragOver="connection_view_DragOver"  DragLeave="connection_view_DragLeave" DragEnter="connection_view_DragEnter" Drop="connection_view_Drop"/>
         <TextBlock x:Name="status_massage"  Text="(status)" TextAlignment="Right" Margin="5,0,5,0"/>
     </StackPanel>
 </Expander>

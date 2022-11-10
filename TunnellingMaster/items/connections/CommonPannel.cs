@@ -10,6 +10,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TunnellingMaster.items.connections.groups;
+using TunnellingMaster.items.elements;
+using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster.items.connections
 {
@@ -61,11 +64,27 @@ namespace TunnellingMaster.items.connections
         public override string ToString()
         {
             List<string> ret = new List<string>();
-            foreach (var _item in this.Children)
+            foreach (object _item in this.Children)
             {
-                ret.Add(_item.ToString());
+                Type _type = _item.GetType();
+                if (_type == typeof(groups.YourComputer))
+                {
+                    groups.YourComputer _local = (groups.YourComputer)_item;
+                    if (_local.panel.Children.Count >= 2)
+                    {
+                        ret.Add("Local=" + ((IconLocalhost)_local.panel.Children[1]).Text + ":" + _local.port.Text);
+                    }
+                }
+                else if (_type == typeof(groups.RemoteHost))
+                {
+                    groups.RemoteHost _remote = (groups.RemoteHost)_item;
+                    if (_remote.panel.Children.Count >= 2)
+                    {
+                        ret.Add("Remote=" + ((IconRemotehost)_remote.panel.Children[1]).Text + ":" + ((IconRemotehost)_remote.panel.Children[1]).Type.ToString() + ":" + _remote.port.Text);
+                    }
+                }
             }
-            return string.Join("->", ret); ;
+            return string.Join(Config.Config.SEPARATOR, ret);
         }
 
         private bool _focused = false;

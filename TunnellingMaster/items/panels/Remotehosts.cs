@@ -55,39 +55,6 @@ namespace TunnellingMaster.items.hosts
         public Label label = new Label();
         public Button add_button = new Button();
 
-        public List<Dictionary<string, string>> JsonDict
-        {
-            get
-            {
-                List<Dictionary<string, string>> _list = new List<Dictionary<string, string>>();
-                foreach (IconRemotehost _child in this.IconList)
-                {
-                    _list.Add(_child.JsonDict);
-                }
-                return _list;
-            }
-            set
-            {
-                foreach (Dictionary<string, string> _item in value)
-                {
-                    IconRemotehost _child = new IconRemotehost();
-                    _child.JsonDict = _item;
-                    foreach (IconRemotehost _latest in this.IconList)
-                    {
-                        if (_latest.Equals(_child))
-                        {
-                            _latest.JsonDict = _item;
-                            _child = null;
-                            break;
-                        }
-                    }
-                    if (!(_child is null))
-                    {
-                        this.panel.Children.Insert(this.panel.Children.Count - 1, _child);
-                    }
-                }
-            }
-        }
 
         public List<IconRemotehost> IconList
         {
@@ -118,12 +85,6 @@ namespace TunnellingMaster.items.hosts
             this.Content = this.panel;
         }
 
-        public List<Dictionary<string, string>> Verification()
-        {
-            List<Dictionary<string, string>> ret = new List<Dictionary<string, string>>();
-            return ret;
-        }
-
         public List<string> get_name_list()
         {
             List<string> _ret = new List<string>();
@@ -137,10 +98,25 @@ namespace TunnellingMaster.items.hosts
             return _ret;
         }
 
+        internal void Add(IconRemotehost item)
+        {
+            if (!(this.panel.Children.Contains(item)))
+            {
+                this.InsertLast(item);
+            }
+        }
+
+        public void InsertLast(IconRemotehost item)
+        {
+            if (!(this.panel.Children.Contains(item)))
+            {
+                this.panel.Children.Insert(this.panel.Children.Count - 1, item);
+            }
+        }
+
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
             this.root_MouseLeftButtonDown(null, null);
-            int _idx = this.panel.Children.Count - 1;
             IconRemotehost _new_item = new IconRemotehost("remotehost", IconRemotehost_State.Resource, IconRemotehost_Type.Server);
             List<string> _already_names = this.get_name_list();
 
@@ -153,7 +129,7 @@ namespace TunnellingMaster.items.hosts
                 _new_item.Text = NameGenerator.PersonNames.Get(separator: ".");
             }
             _new_item.OpenDialogServer();
-            this.panel.Children.Insert(_idx, _new_item);
+            this.InsertLast(_new_item);
 
             _new_item.IsEnabledChanged += (s, e) =>
             {
@@ -162,6 +138,10 @@ namespace TunnellingMaster.items.hosts
                     /* 初回ダイアログでCancelボタンが押されたためアイコン除去 */
                     this.panel.Children.Remove(_new_item);
                     _new_item = null;
+                }
+                else
+                {
+                    (Application.Current.MainWindow as MainWindow).Add_Host(_new_item.MyHost());
                 }
             };
         }

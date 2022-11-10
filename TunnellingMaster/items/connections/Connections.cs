@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster.items.connections
 {
@@ -53,15 +54,6 @@ namespace TunnellingMaster.items.connections
         public Label label = new Label();
         public Button add_button = new Button();
 
-        public string JsonString
-        {
-            get
-            {
-                Dictionary<string, string> _dict = new Dictionary<string, string>();
-                return JsonSerializer.Serialize(_dict, new JsonSerializerOptions { WriteIndented = true });
-            }
-        }
-
         public Connections()
         {
             this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -72,17 +64,6 @@ namespace TunnellingMaster.items.connections
             this.panel.Children.Add(this.label);
             this.panel.Children.Add((Button)this.add_button);
             this.Content = this.panel;
-        }
-
-        public List<Dictionary<string, string>> Verification()
-        {
-            List<Dictionary<string, string>> ret = new List<Dictionary<string, string>>();
-            if (this.panel.Children.Count <= 2)
-            {
-                this.InsertLast(new ExpdConLocal());
-                ret.Add(new Dictionary<string, string>() { { "Info", "Added port forwarding template" } });
-            }
-            return ret;
         }
 
         public List<ExpdConLocal> ConnectionList
@@ -101,18 +82,18 @@ namespace TunnellingMaster.items.connections
             }
         }
 
-        public bool InsertLast(ExpdConLocal new_items)
+        public bool InsertLast(ExpdConLocal new_item)
         {
             foreach (ExpdConLocal _latest in this.ConnectionList)
             {
-                if (_latest.Equals(new_items))
+                if (_latest.Equals(new_item))
                 {
-                    new_items = null;
+                    new_item = null;
                 }
             }
-            if (!(new_items is null))
+            if (!(new_item is null))
             {
-                this.panel.Children.Insert(this.panel.Children.Count - 1, new_items);
+                this.panel.Children.Insert(this.panel.Children.Count - 1, new_item);
                 return true;
             }
             else
@@ -121,9 +102,22 @@ namespace TunnellingMaster.items.connections
             }
         }
 
+        public void Add(ExpdConLocal item)
+        {
+            if (this.InsertLast(item))
+            {
+                MyConnection _con_item = new MyConnection(item);
+                (Application.Current.MainWindow as MainWindow).Add_Connection(_con_item);
+                item.Deleate.Click += (s, e) =>
+                {
+                    (Application.Current.MainWindow as MainWindow).Remove_Connection(_con_item);
+                };
+            }
+        }
+
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            this.InsertLast(new ExpdConLocal());
+            this.Add(new ExpdConLocal());
         }
     }
 }

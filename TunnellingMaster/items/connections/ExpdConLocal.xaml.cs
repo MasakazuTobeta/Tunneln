@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TunnellingMaster.items.connections;
+using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster.items.connections
 {
@@ -20,6 +21,16 @@ namespace TunnellingMaster.items.connections
     /// </summary>
     public partial class ExpdConLocal : Expander
     {
+        private MainWindow _main_window;
+
+        private void CheckMainWindow()
+        {
+            if (this._main_window is null)
+            {
+                this._main_window = Application.Current.MainWindow as MainWindow;
+            }
+        }
+
         public string hash { 
             get {
                 return Common.GetHashedTextString(this.ToString());
@@ -28,7 +39,10 @@ namespace TunnellingMaster.items.connections
 
         public override string ToString()
         {
-            return this.flow_panel.ToString();
+            List<string> ret = new List<string>();
+            ret.Add(this.Title);
+            ret.Add(this.flow_panel.ToString());
+            return string.Join(Config.Config.SEPARATOR, ret);
         }
 
         public bool Equals(ExpdConLocal other)
@@ -68,6 +82,59 @@ namespace TunnellingMaster.items.connections
             InitializeComponent();
             SetInitialConnection();
             SetupDropEvent();
+        }
+
+        public ExpdConLocal(List<string> config)
+        {
+            InitializeComponent();
+            SetInitialConnection();
+            SetupDropEvent();
+            this.CheckMainWindow();
+            this.Title = config[0];
+            config.RemoveAt(0);
+            this.flow_panel.Children.Clear();
+            foreach (string _str in config)
+            {
+                if (_str.StartsWith("Local="))
+                {
+                    string[] _tmp = _str.Replace("Local=", "").Split(':');
+                    if (_tmp.Length == 2)
+                    {
+                        groups.YourComputer _group = new groups.YourComputer();
+                        string _name = _tmp[0];
+                        string _port = _tmp[1];
+                        MyHost _host = this._main_window.Find_Host(_name, "local");
+                        if (!(_host is null))
+                        {
+                            IconLocalhost _icon = (IconLocalhost)_host.Item;
+                            ((IconLocalhost)_group.panel.Children[1]).SetParent(_icon);
+                            _icon.SetChild((IconLocalhost)_group.panel.Children[1]);
+                            _group.port.Text = _port;
+                            this.flow_panel.Children.Add(_group);
+                        }
+                    }
+                }
+                else if (_str.StartsWith("Remote="))
+                {
+                    string[] _tmp = _str.Replace("Remote=", "").Split(':');
+                    if (_tmp.Length == 3)
+                    {
+                        groups.RemoteHost _group = new groups.RemoteHost();
+                        string _name = _tmp[0];
+                        string _type = _tmp[1];
+                        string _port = _tmp[2];
+                        MyHost _host = this._main_window.Find_Host(_name, _type);
+                        if (!(_host is null))
+                        {
+                            IconRemotehost _icon = (IconRemotehost)_host.Item;
+                            ((IconRemotehost)_group.panel.Children[1]).SetParent(_icon);
+                            _icon.SetChild((IconRemotehost)_group.panel.Children[1]);
+                            _group.port.Text = _port;
+                            this.flow_panel.Children.Add(_group);
+                        }
+                    }
+                }
+            }
         }
 
         private CommonPannel flow_panel = null;
@@ -135,6 +202,26 @@ namespace TunnellingMaster.items.connections
         private void ChangedSelectedElement(object sender, EventArgs e)
         {
             this.Focused = ReferenceEquals(this, sender);
+        }
+
+        private void connection_view_DragLeave(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void connection_view_DragOver(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void connection_view_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void connection_view_Drop(object sender, DragEventArgs e)
+        {
+
         }
     }
 }

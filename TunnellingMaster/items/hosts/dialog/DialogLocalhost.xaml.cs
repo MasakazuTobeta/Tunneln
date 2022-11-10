@@ -83,11 +83,12 @@ namespace TunnellingMaster.items.hosts.dialog
 
         private void ok_Click(object sender, RoutedEventArgs e)
         {
+
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close();
         }
 
         private void add_virtual_adapter_Click(object sender, RoutedEventArgs e)
