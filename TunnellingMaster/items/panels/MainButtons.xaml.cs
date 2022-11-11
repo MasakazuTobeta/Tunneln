@@ -25,12 +25,12 @@ namespace TunnellingMaster.items
 
         private void btn_disconnect_all_Click(object sender, RoutedEventArgs e)
         {
-
+            (Application.Current.MainWindow as MainWindow).Stop_Connection();
         }
 
         private void btn_connect_all_Click(object sender, RoutedEventArgs e)
         {
-
+            (Application.Current.MainWindow as MainWindow).Start_Connection();
         }
 
         private bool _focused = false;

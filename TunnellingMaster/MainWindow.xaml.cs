@@ -94,7 +94,17 @@ namespace TunnellingMaster
             {
                 try
                 {
-                    _item.Start_Connection(true);
+                    foreach (object _tmp in this.stack_connections.panel.Children)
+                    {
+                        if (_tmp.GetType() == typeof(ExpdConLocal))
+                        {
+                            ExpdConLocal _con = (ExpdConLocal)_tmp;
+                            if (!(_con.toggle_switch.IsOn))
+                            {
+                                _con.toggle_switch.IsOn = true;
+                            }
+                        }
+                    }
                 }
                 catch (Exception _e)
                 {
@@ -119,7 +129,17 @@ namespace TunnellingMaster
             {
                 try
                 {
-                    _item.Stop_Connection(true);
+                    foreach (object _tmp in this.stack_connections.panel.Children)
+                    {
+                        if (_tmp.GetType() == typeof(ExpdConLocal))
+                        {
+                            ExpdConLocal _con = (ExpdConLocal)_tmp;
+                            if (_con.toggle_switch.IsOn)
+                            {
+                                _con.toggle_switch.IsOn = false;
+                            }
+                        }
+                    }
                 }
                 catch (Exception _e)
                 {
