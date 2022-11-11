@@ -17,11 +17,11 @@ using TunnellingMaster.items.hosts;
 namespace TunnellingMaster.items.connections.groups
 {
     /// <summary>
-    /// YourComputer.xaml の相互作用ロジック
+    /// TargetComputer.xaml の相互作用ロジック
     /// </summary>
-    public partial class YourComputer : UserControl
+    public partial class TargetComputer : UserControl
     {
-        public YourComputer(string Text = "local\r\nhost")
+        public TargetComputer(string Text = "local\r\nhost")
         {
             InitializeComponent();
             this.panel.Children.Add(new IconLocalhost(Text, IconLocalhost_State.Blank));
@@ -63,7 +63,7 @@ namespace TunnellingMaster.items.connections.groups
         public override string ToString()
         {
             List<string> ret = new List<string>();
-            ret.Add( "YourComputer:" + this.port.Text );
+            ret.Add( "TargetComputer:" + this.port.Text );
             if (this.panel.Children.Count >= 2)
             {
                 ret.Add(this.panel.Children[1].ToString());

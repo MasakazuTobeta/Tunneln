@@ -136,7 +136,10 @@ namespace WpfControlLibrary
         public bool IsOn
         {
             get { return (bool)this.GetValue(IsOnProperty); }
-            set { this.SetValue(IsOnProperty, value); }
+            set { 
+                this.SetValue(IsOnProperty, value);
+                this.OnChangedIsOn(EventArgs.Empty);
+            }
         }
         public static readonly DependencyProperty IsOnProperty =
             DependencyProperty.Register("IsOn", typeof(bool),
@@ -144,6 +147,12 @@ namespace WpfControlLibrary
                 new FrameworkPropertyMetadata(false,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     IsOnChangeFunc));
+
+        public event EventHandler ChangedIsOn;
+        protected virtual void OnChangedIsOn(EventArgs e)
+        {
+            ChangedIsOn?.Invoke(this, e);
+        }
 
         static void IsOnChangeFunc(DependencyObject target,
             DependencyPropertyChangedEventArgs e)

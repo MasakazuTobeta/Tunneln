@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="TunnellingMaster.items.connections.groups.TargetComputer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TunnellingMaster.items.connections.groups"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:prop="clr-namespace:TunnellingMaster.Properties"
+             xmlns:elements="clr-namespace:TunnellingMaster.items.elements"
+             xmlns:localhosts="clr-namespace:TunnellingMaster.items.hosts"
+             mc:Ignorable="d" AllowDrop="False"
+             d:DesignHeight="70.383" d:DesignWidth="103.57">
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,0,0,0" x:Name="panel">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+            <fa:ImageAwesome x:Name="icon" Icon="MapPin" Spin="False"  Margin="0" Height="20" VerticalAlignment="Top"/>
+            <TextBox x:Name="port" Text="22" HorizontalAlignment="Center" TextAlignment="Center"
+                     Margin="1" VerticalAlignment="Bottom"
+                     Background="{x:Null}" BorderBrush="{x:Null}"
+                     InputMethod.IsInputMethodEnabled="False" Padding="0,0"
+                     prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Cursor="Arrow"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

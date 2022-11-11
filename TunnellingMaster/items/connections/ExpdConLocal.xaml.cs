@@ -137,11 +137,25 @@ namespace TunnellingMaster.items.connections
             }
         }
 
-        private CommonPannel flow_panel = null;
+        public CommonPannel flow_panel = null;
+        public MyConnection _my_connection;
         private void SetInitialConnection()
         {
             this.flow_panel = (CommonPannel)(new LocalPortForward());
             this.connection_view.Content = this.flow_panel;
+            this._my_connection = new MyConnection(this);
+            this._my_connection.Connected += (s, e) =>
+            {
+                this.Connected();
+            };
+            this._my_connection.Disconnected += (s, e) =>
+            {
+                this.StopConnection(false);
+            };
+            this._my_connection.Failed += (s, e) =>
+            {
+                this.StopConnection(false);
+            };
         }
 
         private void DragOver_LocalHost(object sender, DragEventArgs e)
@@ -220,23 +234,26 @@ namespace TunnellingMaster.items.connections
 
         private void connection_view_DragOver(object sender, DragEventArgs e)
         {
-            if (!(this._drop_point is null))
+            if (this.flow_panel.IsEnabled)
             {
-                var _drop_pos = e.GetPosition(this.flow_panel);
-                foreach (object _item in this.flow_panel.Children)
+                if (!(this._drop_point is null))
                 {
-                    if (_item.GetType() == typeof(groups.RemoteHost))
+                    var _drop_pos = e.GetPosition(this.flow_panel);
+                    foreach (object _item in this.flow_panel.Children)
                     {
-                        StackPanel _ref_arrow = (_item as groups.RemoteHost).arrow;
-                        var _ref_pos = _ref_arrow.TranslatePoint(new Point(0, 0), this.flow_panel);
-                        if (_ref_pos.X + 25.0 > _drop_pos.X)
+                        if (_item.GetType() == typeof(groups.RemoteHost))
                         {
-                            this.Insert_Flow_Item((_item as Control), this._drop_point);
-                            return;
+                            StackPanel _ref_arrow = (_item as groups.RemoteHost).arrow;
+                            var _ref_pos = _ref_arrow.TranslatePoint(new Point(0, 0), this.flow_panel);
+                            if (_ref_pos.X + 25.0 > _drop_pos.X)
+                            {
+                                this.Insert_Flow_Item((_item as Control), this._drop_point);
+                                return;
+                            }
                         }
                     }
+                    this.Insert_Flow_Item(null, this._drop_point, true);
                 }
-                this.Insert_Flow_Item(null, this._drop_point, true);
             }
         }
 
@@ -272,66 +289,132 @@ namespace TunnellingMaster.items.connections
 
         private void connection_view_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent("Object"))
-            {
-                var data = e.Data.GetData("Object");
-                if (typeof(IconRemotehost).IsInstanceOfType(data))
-                {
-                    if (this._drop_point is null)
-                    {
-                        this._drop_point = new DragDropBorder(this);
-                        this.flow_panel.Children.Add(this._drop_point);
-                    }
-                }
-            }
-            e.Handled = true;
-        }
-
-        private void connection_view_Drop(object sender, DragEventArgs e)
-        {
-            if (!(this._drop_point is null))
+            if (this.flow_panel.IsEnabled)
             {
                 if (e.Data.GetDataPresent("Object"))
                 {
                     var data = e.Data.GetData("Object");
                     if (typeof(IconRemotehost).IsInstanceOfType(data))
                     {
-                        IconRemotehost _parent_host = (data as IconRemotehost);
-                        if (_parent_host.State == IconRemotehost_State.Resource)
+                        if (this._drop_point is null)
                         {
-                            groups.RemoteHost _insert_group = new groups.RemoteHost();
-                            IconRemotehost _insert_host = (_insert_group.panel.Children[1] as IconRemotehost);
-                            _insert_host.SetParent(_parent_host);
-                            _parent_host.SetChild(_insert_host);
-                            this.flow_panel.Children.Insert(this.flow_panel.Children.IndexOf(this._drop_point), _insert_group);
+                            this._drop_point = new DragDropBorder(this);
+                            this.flow_panel.Children.Add(this._drop_point);
                         }
                     }
                 }
-                this.flow_panel.Children.Remove(this._drop_point);
-                this._drop_point = null;
+                e.Handled = true;
+            }
+        }
+
+        private void connection_view_Drop(object sender, DragEventArgs e)
+        {
+            if (this.flow_panel.IsEnabled)
+            {
+                if (!(this._drop_point is null))
+                {
+                    if (e.Data.GetDataPresent("Object"))
+                    {
+                        var data = e.Data.GetData("Object");
+                        if (typeof(IconRemotehost).IsInstanceOfType(data))
+                        {
+                            IconRemotehost _parent_host = (data as IconRemotehost);
+                            if (_parent_host.State == IconRemotehost_State.Resource)
+                            {
+                                groups.RemoteHost _insert_group = new groups.RemoteHost();
+                                IconRemotehost _insert_host = (_insert_group.panel.Children[1] as IconRemotehost);
+                                _insert_host.SetParent(_parent_host);
+                                _parent_host.SetChild(_insert_host);
+                                this.flow_panel.Children.Insert(this.flow_panel.Children.IndexOf(this._drop_point), _insert_group);
+                            }
+                        }
+                    }
+                    this.flow_panel.Children.Remove(this._drop_point);
+                    this._drop_point = null;
+                }
             }
         }
 
         private void Insert_Flow_Item(Control item1, Control item2, bool add_last = false)
         {
-            int idx_now = this.flow_panel.Children.IndexOf(item2);
-            if (add_last)
+            if (this.flow_panel.IsEnabled)
             {
-                if (!(idx_now == this.flow_panel.Children.Count - 1))
+                int idx_now = this.flow_panel.Children.IndexOf(item2);
+                if (add_last)
                 {
-                    this.flow_panel.Children.Remove(item2);
-                    this.flow_panel.Children.Add(item2);
+                    if (!(idx_now == this.flow_panel.Children.Count - 1))
+                    {
+                        this.flow_panel.Children.Remove(item2);
+                        this.flow_panel.Children.Add(item2);
+                    }
+                }
+                else
+                {
+                    int idx_next = this.flow_panel.Children.IndexOf(item1);
+                    if ((idx_next < idx_now) || (idx_now + 1 < idx_next))
+                    {
+                        this.flow_panel.Children.Remove(item2);
+                        this.flow_panel.Children.Insert(idx_next, item2);
+                    }
                 }
             }
-            else
+        }
+
+        public bool Verification()
+        {
+
+            return true;
+        }
+
+        private void toggle_switch_ChangedIsOn(object sender, EventArgs e)
+        {
+            if (this.Verification())
             {
-                int idx_next = this.flow_panel.Children.IndexOf(item1);
-                if ((idx_next < idx_now) || (idx_now + 1 < idx_next))
+                if (this.toggle_switch.IsOn)
                 {
-                    this.flow_panel.Children.Remove(item2);
-                    this.flow_panel.Children.Insert(idx_next, item2);
+                    this.StartConnection();
+                }
+                else
+                {
+                    this.StopConnection();
                 }
             }
+        }
+
+        public void Connected()
+        {
+            Debug.Print("Connected");
+            this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Link;
+            this.status_icon.Spin = false;
+        }
+
+        public void StopConnection(bool do_disconnect=true)
+        {
+            try
+            {
+                Debug.Print("Stop connection");
+                this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
+                this.status_icon.Spin = false;
+                this.flow_panel.IsEnabled = true;
+                if (do_disconnect)
+                {
+                    this._main_window.Stop_Connection(this._my_connection);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        public void StartConnection()
+        {
+            Debug.Print("Start connection");
+            this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Spinner;
+            this.status_icon.Spin = true;
+            this.status_icon.SpinDuration = 5;
+            this.flow_panel.IsEnabled = false;
+            this._main_window.Start_Connection(this._my_connection);
         }
     }
 }

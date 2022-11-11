@@ -106,7 +106,7 @@ namespace TunnellingMaster.items.connections
         {
             if (this.InsertLast(item))
             {
-                MyConnection _con_item = new MyConnection(item);
+                MyConnection _con_item = item._my_connection;
                 (Application.Current.MainWindow as MainWindow).Add_Connection(_con_item);
                 item.Deleate.Click += (s, e) =>
                 {

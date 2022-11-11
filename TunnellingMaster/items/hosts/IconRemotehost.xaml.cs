@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -205,6 +206,13 @@ namespace TunnellingMaster.items.hosts
             }
         }
 
+        public bool IsKeyAuthentication { 
+            get 
+            {
+                return File.Exists(this.keyfile);
+            } 
+        }
+
         private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.Focused = true;
@@ -217,7 +225,7 @@ namespace TunnellingMaster.items.hosts
             this.Focused = ReferenceEquals(this, sender);
         }
 
-        private void UpdateView()
+        public void UpdateView()
         {
             switch (this.State)
             {

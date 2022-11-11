@@ -40,6 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="items\connections\groups\TargetComputer.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="items\hosts\IconRemotehost.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

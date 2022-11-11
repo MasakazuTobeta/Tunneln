@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using TunnellingMaster.items;
 using TunnellingMaster.items.connections;
+using TunnellingMaster.items.dialogs;
 using TunnellingMaster.items.hosts;
 
 namespace TunnellingMaster
@@ -83,7 +84,7 @@ namespace TunnellingMaster
 
         public void Start_Connection(MyConnection _item)
         {
-            Debug.Print(_item.ToString());
+            _item.Start_Connection(false);
         }
 
         public void Start_Connection()
@@ -93,7 +94,7 @@ namespace TunnellingMaster
             {
                 try
                 {
-                    this.Start_Connection(_item);
+                    _item.Start_Connection(true);
                 }
                 catch (Exception _e)
                 {
@@ -108,7 +109,7 @@ namespace TunnellingMaster
 
         public void Stop_Connection(MyConnection _item)
         {
-            Debug.Print(_item.ToString());
+            _item.Stop_Connection(false);
         }
 
         public void Stop_Connection()
@@ -118,7 +119,7 @@ namespace TunnellingMaster
             {
                 try
                 {
-                    this.Stop_Connection(_item);
+                    _item.Stop_Connection(true);
                 }
                 catch (Exception _e)
                 {
@@ -129,6 +130,16 @@ namespace TunnellingMaster
             {
                 throw new AggregateException("Multiple Errors Occured", ex);
             }
+        }
+
+        internal void Connected(MyConnection myConnection)
+        {
+            myConnection.Item.Connected();
+        }
+
+        internal void Disconnect(MyConnection myConnection)
+        {
+            myConnection.Item.StopConnection(false);
         }
 
 
@@ -165,5 +176,90 @@ namespace TunnellingMaster
             this.SetSelectedElement(this);
         }
 
+
+        #region ******************************* Temporary Authorization
+        Dictionary<string, string> _user_name = new Dictionary<string, string>();
+        Dictionary<string, string> _password = new Dictionary<string, string>();
+        public List<string> GetUsernameAndPassword(string kwd, string msg = "", string username = "", string pass = "")
+        {
+            List<string> ret = new List<string>();
+            InputUsernameAndPassword _form = new InputUsernameAndPassword();
+            _form.Target = kwd;
+            if (msg.Length > 0)
+            {
+                _form.Message = msg;
+            }
+            if (!(username is null))
+            {
+                if (!(username.Length > 0))
+                {
+                    this._user_name[kwd] = username;
+                }
+            }
+            else
+            {
+                this._user_name[kwd] = "";
+                _form.setVisible(uname: Visibility.Collapsed);
+            }
+            if (pass is null)
+            {
+                _form.setVisible(pass: Visibility.Collapsed);
+            }
+            if (!this._user_name.ContainsKey(kwd))
+            {
+                // Get Username and Password
+                if ((bool)_form.ShowDialog())
+                {
+                    string kwd_pass = this._user_name[kwd] + "@" + kwd;
+                    ret.Add(this._user_name[kwd]);
+                    ret.Add(this._password[kwd_pass]);
+                }
+            }
+            else
+            {
+                if (pass is null)
+                {
+                    ret.Add(this._user_name[kwd]);
+                    ret.Add("");
+                }
+                else
+                {
+                    string kwd_pass = this._user_name[kwd] + "@" + kwd;
+                    if (!this._password.ContainsKey(kwd_pass))
+                    {
+                        // Get Password
+                        _form.Username = this._user_name[kwd];
+                        if ((bool)_form.ShowDialog())
+                        {
+                            this._password[kwd_pass] = _form.Password;
+                            ret.Add(this._user_name[kwd]);
+                            ret.Add(this._password[kwd_pass]);
+                        }
+                    }
+                    else
+                    {
+                        ret.Add(this._user_name[kwd]);
+                        ret.Add(this._password[kwd_pass]);
+                    }
+                }
+            }
+            return ret;
+        }
+        public void RemoveUsernameAndPassword(string kwd, string username = "")
+        {
+            if (username is null)
+            {
+                username = "";
+            }
+            if (this._user_name.ContainsKey(kwd))
+            {
+                this._user_name.Remove(kwd);
+            }
+            if (this._password.ContainsKey(username + "@" + kwd))
+            {
+                this._user_name.Remove(username + "@" + kwd);
+            }
+        }
+        #endregion
     }
 }

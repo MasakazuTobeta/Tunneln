@@ -9,27 +9,34 @@
              xmlns:prop="clr-namespace:TunnellingMaster.Properties"
              xmlns:local="clr-namespace:TunnellingMaster.items.connections"
              mc:Ignorable="d" x:Name="root"  MouseLeftButtonDown="root_MouseLeftButtonDown"
-             d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black">
+             d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black" HorizontalAlignment="Stretch">
     <Expander.Header>
-        <StackPanel x:Name="header_panel" Orientation="Horizontal">
+        <Grid x:Name="header_panel" HorizontalAlignment="{Binding HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
             <TextBox x:Name="title" 
                        Text="{Binding Title, ElementName=root}" 
                        Background="{x:Null}"
                        BorderBrush="{x:Null}"
+                       Width="Auto"
                        Height="18"
-                       Width="150" 
                        Margin="2"
                        Padding="0,0"
                        TextAlignment="Left"
                        VerticalAlignment="Center"
+                       HorizontalAlignment="Stretch"
                        Cursor="Arrow"
-                       prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"                       
+                       prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"
+                       Grid.Column="0"
             />
-            <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18"/>
-            <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18"/>
-            <Border BorderThickness="0" Width="100"/>
-            <Button x:Name="Deleate" Content="❌" HorizontalAlignment="Right" FontSize="10" Padding="0,0" Height="15" Width="15" Cursor="Hand" Margin="3" Click="Deleate_Click"/>
-        </StackPanel>
+            <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18" Grid.Column="1"/>
+            <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18" ChangedIsOn="toggle_switch_ChangedIsOn" Grid.Column="2"/>
+            <Button x:Name="Deleate" Content="❌" HorizontalAlignment="Center" FontSize="10" Padding="0,0" Height="15" Width="15" Cursor="Hand" Margin="3" Click="Deleate_Click" Grid.Column="3"/>
+        </Grid>
     </Expander.Header>
 
     <StackPanel x:Name="stack_panel">
