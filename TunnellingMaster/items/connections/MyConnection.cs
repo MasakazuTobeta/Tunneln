@@ -270,10 +270,17 @@ namespace TunnellingMaster.items.connections
                                     _forward.Start();
                                     this.forwards.Insert(0, _forward);
                                     List<ConnectionInfo> _connectionInfo = this.CreateConnectionInfo(_group_host, adress:_forward.BoundHost, ports:new List<int> { (int)_forward.BoundPort });
-                                    SshClient _client = new SshClient(_connectionInfo[0]);
-                                    _client.ErrorOccurred += _client_ErrorOccurred;
-                                    _client.Connect();
-                                    this.clients.Insert(0, _client);
+                                    if (_connectionInfo.Count > 0)
+                                    {
+                                        SshClient _client = new SshClient(_connectionInfo[0]);
+                                        _client.ErrorOccurred += _client_ErrorOccurred;
+                                        _client.Connect();
+                                        this.clients.Insert(0, _client);
+                                    }
+                                    else
+                                    {
+                                        this.Failed.Invoke(this, EventArgs.Empty);
+                                    }
                                 }
                             }
                             else
