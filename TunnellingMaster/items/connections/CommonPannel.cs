@@ -67,9 +67,9 @@ namespace TunnellingMaster.items.connections
             foreach (object _item in this.Children)
             {
                 Type _type = _item.GetType();
-                if (_type == typeof(groups.TargetComputer))
+                if (_type == typeof(groups.YourComputer))
                 {
-                    groups.TargetComputer _local = (groups.TargetComputer)_item;
+                    groups.YourComputer _local = (groups.YourComputer)_item;
                     if (_local.panel.Children.Count >= 2)
                     {
                         ret.Add("Local=" + ((IconLocalhost)_local.panel.Children[1]).Text + ":" + _local.port.Text);

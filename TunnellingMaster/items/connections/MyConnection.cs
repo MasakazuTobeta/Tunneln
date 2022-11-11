@@ -225,13 +225,13 @@ namespace TunnellingMaster.items.connections
         private List<ForwardedPortLocal> forwards = new List<ForwardedPortLocal>();
         internal void Start_Connection(bool silent = false)
         {
-            groups.TargetComputer _localhost = null;
+            groups.YourComputer _localhost = null;
             this.CheckPanels();
             foreach (object item in this.Item.flow_panel.Children)
             {
-                if (item.GetType() == typeof(groups.TargetComputer))
+                if (item.GetType() == typeof(groups.YourComputer))
                 {
-                    _localhost = (groups.TargetComputer)item;
+                    _localhost = (groups.YourComputer)item;
                 }
                 else
                 {
