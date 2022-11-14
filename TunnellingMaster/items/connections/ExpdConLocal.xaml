@@ -41,11 +41,9 @@
 
     <StackPanel x:Name="stack_panel">
         <ComboBox SelectedIndex="0" x:Name="connection_type" BorderThickness="1">
-            <ComboBoxItem x:Name="type_local" Content=" Local port forwarding (LPF)" IsEnabled="True"/>
-            <ComboBoxItem x:Name="type_remote" Content=" Remote port forwarding (RPF)" IsEnabled="False"/>
-            <ComboBoxItem x:Name="type_dynamic" Content=" Dynamic port forwarding (DPF)" IsEnabled="False"/>
-            <ComboBoxItem x:Name="type_samba" Content=" [Template] Samba (LPF)" IsEnabled="False"/>
-            <ComboBoxItem x:Name="type_socks" Content=" [Template] SOCKS proxy (DPF)" IsEnabled="False"/>
+            <ComboBoxItem x:Name="type_local" Content=" Local port forwarding (LPF)" IsEnabled="True" Tag="LPF"/>
+            <ComboBoxItem x:Name="type_dynamic" Content=" Dynamic port forwarding (DPF)" IsEnabled="True" Tag="DPF"/>
+            <ComboBoxItem x:Name="type_remote" Content=" Remote port forwarding (RPF)" IsEnabled="False" Tag="RPF"/>
         </ComboBox>
         <ScrollViewer x:Name="connection_view" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" AllowDrop="True" DragOver="connection_view_DragOver"  DragLeave="connection_view_DragLeave" DragEnter="connection_view_DragEnter" Drop="connection_view_Drop"/>
         <TextBlock x:Name="status_massage"  Text="(status)" TextAlignment="Right" Margin="5,0,5,0"/>

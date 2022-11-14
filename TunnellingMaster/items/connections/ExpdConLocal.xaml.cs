@@ -360,6 +360,22 @@ namespace TunnellingMaster.items.connections
             }
         }
 
+        internal string PfType
+        {
+            get { return (string)(this.connection_type.SelectedItem as ComboBoxItem).Tag; }
+            set 
+            {
+                foreach (ComboBoxItem _item in this.connection_type.Items)
+                {
+                    if ((_item.Tag as string) == value)
+                    {
+                        this.connection_type.SelectedItem = _item;
+                        break;
+                    }
+                }
+            }
+        }
+
         public bool Verification()
         {
 

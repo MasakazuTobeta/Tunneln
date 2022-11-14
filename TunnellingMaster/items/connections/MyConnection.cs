@@ -30,7 +30,7 @@ namespace TunnellingMaster.items.connections
         public override string ToString()
         {
             List<string> _tmp = new List<string>();
-            _tmp.Add("LPF");
+            _tmp.Add(this.Item.PfType);
             _tmp.Add(this.Item.ToString());
             return string.Join(Config.Config.SEPARATOR, _tmp);
         }
@@ -57,17 +57,9 @@ namespace TunnellingMaster.items.connections
         {
             string _type = config[0];
             config.RemoveAt(0);
-            switch (_type)
-            {
-                case "LPF":
-                    this.Item = new ExpdConLocal(config); // List<string> -> Restore LPF
-                    break;
-                default:
-                    this.Item = null;
-                    break;
-            }
+            this.Item = new ExpdConLocal(config);
+            this.Item.PfType = _type;
         }
-
 
         #region ******************************* Start connect
         private PrivateKeyFile GetPkeyfile(string path, string pass = "")
@@ -222,18 +214,25 @@ namespace TunnellingMaster.items.connections
         }
 
         private List<SshClient> clients = new List<SshClient>();
-        private List<ForwardedPortLocal> forwards = new List<ForwardedPortLocal>();
+        private List<ForwardedPort> forwards = new List<ForwardedPort>();
         internal void Start_Connection(bool silent = false)
         {
             groups.YourComputer _localhost = null;
             this.CheckPanels();
+            if (this.Item.PfType == "DPF")
+            {
+                if (this.Item.flow_panel.Children[this.Item.flow_panel.Children.Count - 1].GetType() == typeof(groups.RemoteHost))
+                {
+                    this.Item.flow_panel.Children.Add(new groups.SocksIcon());
+                }
+            }
             foreach (object item in this.Item.flow_panel.Children)
             {
                 if (item.GetType() == typeof(groups.YourComputer))
                 {
                     _localhost = (groups.YourComputer)item;
                 }
-                else
+                else if (item.GetType() == typeof(groups.RemoteHost))
                 {
                     if (_localhost is null)
                     {
@@ -286,28 +285,35 @@ namespace TunnellingMaster.items.connections
                             else
                             {
                                 /* Target host */
-                                for (int _ii=0; _ii<_group_host.Ports.Count; _ii++)
+                                for (int _ii = 0; _ii < _group_host.Ports.Count; _ii++)
                                 {
                                     if (_ii >= _localhost.Ports.Count)
                                     {
                                         break;
                                     }
-                                    else
-                                    {
-                                        int _local_port = _localhost.Ports[_ii];
-                                        int _remote_port = _group_host.Ports[_ii];
-                                        ForwardedPortLocal _forward = new ForwardedPortLocal(_localhost.Adress, (uint)_local_port, _group_host.Adress, (uint)_remote_port);
-                                        this.clients[0].AddForwardedPort(_forward);
-                                        _forward.Exception += _forward_Exception;
-                                        _forward.Start();
-                                        this.forwards.Insert(0, _forward);
-                                    }
+                                    /* Local port forwarding */
+                                    int _local_port = _localhost.Ports[_ii];
+                                    int _remote_port = _group_host.Ports[_ii];
+                                    ForwardedPortLocal _forward = new ForwardedPortLocal(_localhost.Adress, (uint)_local_port, _group_host.Adress, (uint)_remote_port);
+                                    this.clients[0].AddForwardedPort(_forward);
+                                    _forward.Exception += _forward_Exception;
+                                    _forward.Start();
+                                    this.forwards.Insert(0, _forward);
                                 }
                                 this._main_window.Connected(this);
                             }
                         }
 
                     }
+                }else if (item.GetType() == typeof(groups.SocksIcon))
+                {
+                    /* Dynamc port forwarding */
+                    ForwardedPortDynamic _forward = new ForwardedPortDynamic(_localhost.Adress, (uint)_localhost.Ports[0]);
+                    this.clients[0].AddForwardedPort(_forward);
+                    _forward.Exception += _forward_Exception;
+                    _forward.Start();
+                    this.forwards.Insert(0, _forward);
+                    this._main_window.Connected(this);
                 }
             }
         }
@@ -317,14 +323,8 @@ namespace TunnellingMaster.items.connections
         #region ******************************* Disconnect
         public void Disconnect()
         {
-            if ((this.forwards.Count>0) || (this.clients.Count>0)) {
-                foreach (ForwardedPortLocal _forward in this.forwards)
-                {
-                    if (_forward.IsStarted)
-                    {
-                        _forward.Stop();
-                    }
-                }
+            if ((this.forwards.Count>0) || (this.clients.Count>0))
+            {
                 foreach (SshClient _client in this.clients)
                 {
                     if (_client.IsConnected)
@@ -332,10 +332,15 @@ namespace TunnellingMaster.items.connections
                         _client.Disconnect();
                     }
                 }
-                this.clients = null;
-                this.forwards = null;
+                foreach (ForwardedPort _forward in this.forwards)
+                {
+                    if (_forward.IsStarted)
+                    {
+                        _forward.Stop();
+                    }
+                }
                 this.clients = new List<SshClient>();
-                this.forwards = new List<ForwardedPortLocal>();
+                this.forwards = new List<ForwardedPort>();
                 this._main_window.Disconnect(this);
             }
         }
@@ -347,7 +352,15 @@ namespace TunnellingMaster.items.connections
 
         private void _forward_Exception(object sender, Renci.SshNet.Common.ExceptionEventArgs e)
         {
-            this.Disconnect();
+            if ((sender.GetType() == typeof(ForwardedPortDynamic)) ||
+                (sender.GetType() == typeof(ForwardedPortLocal)))
+            {
+            }
+            else
+            {
+                this.Disconnect();
+            }
+
         }
 
         private void _client_ErrorOccurred(object sender, Renci.SshNet.Common.ExceptionEventArgs e)
