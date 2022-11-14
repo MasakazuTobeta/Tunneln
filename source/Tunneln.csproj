@@ -4,7 +4,18 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Authors>Masakazu Tobeta</Authors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="resource\grep.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="resource\grep.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="items\hosts\IconRemotehost.xaml.cs">
@@ -26,7 +37,6 @@
 
   <ItemGroup>
     <Folder Include="Resources\" />
-    <Folder Include="resource\" />
   </ItemGroup>
 
   <ItemGroup>
