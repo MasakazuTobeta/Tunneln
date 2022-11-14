@@ -148,7 +148,7 @@ namespace Tunneln.items.hosts.dialog
                 List<string> _cmd = new List<string>();
                 foreach (string exist in this.CheckExistInHostsFile())
                 {
-                    _cmd.Add(@"grep.bat C:\Windows\System32\drivers\etc\hosts .\.hosts.bak " + exist + " #" + exist);
+                    _cmd.Add(@"resource\grep.bat C:\Windows\System32\drivers\etc\hosts .\.hosts.bak " + exist + " #" + exist);
                 }
                 if (_cmd.Count > 0)
                 {
