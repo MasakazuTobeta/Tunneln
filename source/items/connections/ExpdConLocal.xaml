@@ -1,0 +1,51 @@
+﻿<Expander x:Class="Tunneln.items.connections.ExpdConLocal"
+             xmlns:elements="clr-namespace:Tunneln.items.elements"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:ts="clr-namespace:WpfControlLibrary"
+             xmlns:prop="clr-namespace:Tunneln.Properties"
+             xmlns:local="clr-namespace:Tunneln.items.connections"
+             mc:Ignorable="d" x:Name="root"  MouseLeftButtonDown="root_MouseLeftButtonDown"
+             d:DesignHeight="267.602" d:DesignWidth="416.365" IsExpanded="True" BorderBrush="Black" HorizontalAlignment="Stretch">
+    <Expander.Header>
+        <Grid x:Name="header_panel" HorizontalAlignment="{Binding HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="title" 
+                       Text="{Binding Title, ElementName=root}" 
+                       Background="{x:Null}"
+                       BorderBrush="{x:Null}"
+                       Width="Auto"
+                       Height="18"
+                       Margin="2"
+                       Padding="0,0"
+                       TextAlignment="Left"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Stretch"
+                       Cursor="Arrow"
+                       prop:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll"
+                       Grid.Column="0"
+            />
+            <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18" Grid.Column="1"/>
+            <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18" Grid.Column="2" Click="toggle_switch_Click"/>
+            <Button x:Name="Deleate" Content="❌" HorizontalAlignment="Center" FontSize="10" Padding="0,0" Height="15" Width="15" Cursor="Hand" Margin="3" Click="Deleate_Click" Grid.Column="3"/>
+        </Grid>
+    </Expander.Header>
+
+    <StackPanel x:Name="stack_panel">
+        <ComboBox SelectedIndex="0" x:Name="connection_type" BorderThickness="1">
+            <ComboBoxItem x:Name="type_local" Content=" Local port forwarding (LPF)" IsEnabled="True" Tag="LPF"/>
+            <ComboBoxItem x:Name="type_dynamic" Content=" Dynamic port forwarding (DPF)" IsEnabled="True" Tag="DPF"/>
+            <ComboBoxItem x:Name="type_remote" Content=" Remote port forwarding (RPF)" IsEnabled="False" Tag="RPF"/>
+        </ComboBox>
+        <ScrollViewer x:Name="connection_view" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" AllowDrop="True" DragOver="connection_view_DragOver"  DragLeave="connection_view_DragLeave" DragEnter="connection_view_DragEnter" Drop="connection_view_Drop"/>
+        <TextBlock x:Name="status_massage"  Text="(status)" TextAlignment="Right" Margin="5,0,5,0"/>
+    </StackPanel>
+</Expander>
