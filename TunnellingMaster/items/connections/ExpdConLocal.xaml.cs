@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TunnellingMaster.items.connections;
 using TunnellingMaster.items.hosts;
+using WpfControlLibrary;
 
 namespace TunnellingMaster.items.connections
 {
@@ -378,59 +379,56 @@ namespace TunnellingMaster.items.connections
 
         public bool Verification()
         {
-
             return true;
-        }
-
-        private void toggle_switch_ChangedIsOn(object sender, EventArgs e)
-        {
-            if (this.Verification())
-            {
-                if (this.toggle_switch.IsOn)
-                {
-                    this.StartConnection();
-                }
-                else
-                {
-                    this.StopConnection();
-                }
-            }
         }
 
         public void Connected()
         {
             Debug.Print("Connected");
             this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Link;
-            this.status_icon.Spin = false;
+            this.status_icon.Spin = true;
+            this.status_icon.SpinDuration = 15;
         }
 
         public void StopConnection(bool do_disconnect=true)
         {
-            try
-            {
-                Debug.Print("Stop connection");
-                this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
-                this.status_icon.Spin = false;
-                this.flow_panel.IsEnabled = true;
-                if (do_disconnect)
-                {
-                    this._main_window.Stop_Connection(this._my_connection);
-                }
-            }
-            catch
-            {
+            Debug.Print("Stop connection");
+            this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
+            this.status_icon.Spin = false;
+            this.flow_panel.IsEnabled = true;
+        }
 
+        public bool StartConnection()
+        {
+            Debug.Print("Start connection");
+            if (this.Verification())
+            {
+                this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Spinner;
+                this.status_icon.Spin = true;
+                this.status_icon.SpinDuration = 5;
+                this.flow_panel.IsEnabled = false;
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
-        public void StartConnection()
+        private void toggle_switch_Click(object sender, EventArgs e)
         {
-            Debug.Print("Start connection");
-            this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Spinner;
-            this.status_icon.Spin = true;
-            this.status_icon.SpinDuration = 5;
-            this.flow_panel.IsEnabled = false;
-            this._main_window.Start_Connection(this._my_connection);
+            if ((e as ToggleSwitch.EventArgsBool).value)
+            {
+                if (this.StartConnection())
+                {
+                    this._main_window.Start_Connection(this._my_connection);
+                }
+            }
+            else
+            {
+                this.StopConnection();
+                this._main_window.Stop_Connection(this._my_connection);
+            }
         }
     }
 }

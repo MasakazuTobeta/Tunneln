@@ -15,8 +15,22 @@ namespace WpfControlLibrary
             borderTrack.Background = new SolidColorBrush(Colors.Gray); ;
         }
 
+        public class EventArgsBool : EventArgs
+        {
+            public bool value { get; set; }
+            public EventArgsBool(bool value) => this.value = value;
+        }
+
+
+        public event EventHandler Click;
+        protected virtual void OnClick(EventArgsBool e)
+        {
+            Click?.Invoke(this, e);
+        }
+
         private void ButtonToggle_Click(object sender, RoutedEventArgs e)
         {
+            this.OnClick(new EventArgsBool(!IsOn));
             IsOn = !IsOn;
         }
 
@@ -136,7 +150,7 @@ namespace WpfControlLibrary
         public bool IsOn
         {
             get { return (bool)this.GetValue(IsOnProperty); }
-            set { 
+            set {
                 this.SetValue(IsOnProperty, value);
                 this.OnChangedIsOn(EventArgs.Empty);
             }
