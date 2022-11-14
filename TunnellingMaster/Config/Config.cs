@@ -9,7 +9,7 @@ using System.Windows.Threading;
 using TunnellingMaster.items.connections;
 using TunnellingMaster.items.hosts;
 
-namespace TunnellingMaster.Config
+namespace TunnellingMaster.config
 {
     class Config
     {

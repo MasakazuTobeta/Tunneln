@@ -32,7 +32,7 @@ namespace TunnellingMaster.items.connections
             List<string> _tmp = new List<string>();
             _tmp.Add(this.Item.PfType);
             _tmp.Add(this.Item.ToString());
-            return string.Join(Config.Config.SEPARATOR, _tmp);
+            return string.Join(config.Config.SEPARATOR, _tmp);
         }
 
         public event EventHandler Connected;

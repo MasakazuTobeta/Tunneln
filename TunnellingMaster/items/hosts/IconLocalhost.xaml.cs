@@ -53,7 +53,7 @@ namespace TunnellingMaster.items.hosts
             _tmp.Add(this.address); // 2
             _tmp.Add(this.hosts_file.ToString()); // 3
             _tmp.Add(this.virtual_adpt.ToString()); // 4
-            return string.Join(Config.Config.SEPARATOR, _tmp);
+            return string.Join(config.Config.SEPARATOR, _tmp);
         }
 
         public IconLocalhost(List<string> config)

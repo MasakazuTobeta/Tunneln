@@ -61,7 +61,7 @@ namespace TunnellingMaster.items.hosts
             _tmp.Add(this.user); // 4
             _tmp.Add(this.keyfile); // 5
             _tmp.Add(EncryptUtils.Encrypt(this.pass)); // 6
-            return string.Join(Config.Config.SEPARATOR, _tmp);
+            return string.Join(config.Config.SEPARATOR, _tmp);
         }
 
         public IconRemotehost(List<string> config)

@@ -43,19 +43,19 @@ namespace TunnellingMaster.items.hosts
                 case "local":
                     _tmp.Add("local");
                     _tmp.Add(((IconLocalhost)this.Item).ToString());
-                    return string.Join(Config.Config.SEPARATOR, _tmp);
+                    return string.Join(config.Config.SEPARATOR, _tmp);
                 case "remote":
                     _tmp.Add("remote");
                     _tmp.Add(((IconRemotehost)this.Item).ToString());
-                    return string.Join(Config.Config.SEPARATOR, _tmp);
+                    return string.Join(config.Config.SEPARATOR, _tmp);
                 case "proxy":
                     _tmp.Add("proxy");
                     _tmp.Add(((IconRemotehost)this.Item).ToString());
-                    return string.Join(Config.Config.SEPARATOR, _tmp);
+                    return string.Join(config.Config.SEPARATOR, _tmp);
                 default:
                     _tmp.Add("unknown");
                     _tmp.Add("Unknown host type");
-                    return string.Join(Config.Config.SEPARATOR, _tmp);
+                    return string.Join(config.Config.SEPARATOR, _tmp);
             }
         }
 

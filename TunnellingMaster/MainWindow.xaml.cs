@@ -34,7 +34,7 @@ namespace TunnellingMaster
 
         public event EventHandler ChangedSelectedElement;
 
-        private Config.Config _config = new Config.Config(AUTO_SAVE_FILE);
+        private config.Config _config = new config.Config(AUTO_SAVE_FILE);
         private MyHosts _my_hosts = new MyHosts();
         private MyConnections _my_connections = new MyConnections();
 

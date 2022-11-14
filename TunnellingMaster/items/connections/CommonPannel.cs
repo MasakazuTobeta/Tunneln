@@ -84,7 +84,7 @@ namespace TunnellingMaster.items.connections
                     }
                 }
             }
-            return string.Join(Config.Config.SEPARATOR, ret);
+            return string.Join(config.Config.SEPARATOR, ret);
         }
 
         private bool _focused = false;

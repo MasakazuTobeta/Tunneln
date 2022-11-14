@@ -42,7 +42,7 @@ namespace TunnellingMaster.items.connections
             List<string> ret = new List<string>();
             ret.Add(this.Title);
             ret.Add(this.flow_panel.ToString());
-            return string.Join(Config.Config.SEPARATOR, ret);
+            return string.Join(config.Config.SEPARATOR, ret);
         }
 
         public bool Equals(ExpdConLocal other)
