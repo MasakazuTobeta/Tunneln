@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <Authors>Masakazu Tobeta</Authors>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
