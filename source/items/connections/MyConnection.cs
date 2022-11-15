@@ -257,6 +257,10 @@ namespace Tunneln.items.connections
                                     {
                                         /* First host */
                                         List<ConnectionInfo> _connectionInfo = this.CreateConnectionInfo(_group_host);
+                                        if (_connectionInfo.Count <= 0)
+                                        {
+                                            throw new IndexOutOfRangeException("Connection information could not be created.");
+                                        }
                                         SshClient _client = new SshClient(_connectionInfo[0]);
                                         _client.ErrorOccurred += _client_ErrorOccurred;
                                         _client.Connect();

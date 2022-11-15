@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -11,17 +12,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Tunneln.items.connections;
 using Tunneln.items.hosts;
 using WpfControlLibrary;
 
 namespace Tunneln.items.connections
 {
+    public enum Connection_State
+    {
+        Closed = 0,
+        Waiting = 1,
+        Connected = 2,
+    }
+
     /// <summary>
     /// ExpdConLocal.xaml の相互作用ロジック
     /// </summary>
     public partial class ExpdConLocal : Expander
     {
+        public string Message { get { return this.status_message.Text; } set { this.status_message.Text = value; } }
         public bool IsOn { get { return this.toggle_switch.IsOn; } set { this.toggle_switch.IsOn = value; } }
         private MainWindow _main_window;
 
@@ -52,19 +62,6 @@ namespace Tunneln.items.connections
             if (other == null) return false;
             return (this.ToString().Equals(other.ToString()));
         }
-
-        public string Message
-        {
-            get { return (string)GetValue(MessageProperty); }
-            set { SetValue(MessageProperty, value); }
-        }
-
-        public static readonly DependencyProperty MessageProperty =
-            DependencyProperty.Register(
-                "Message",                          // プロパティ名
-                typeof(string),                     // プロパティの型
-                typeof(Expander),                   // プロパティを所有する型＝このクラスの名前
-                new PropertyMetadata("Message"));   // 初期値
 
         public string Title
         {
@@ -374,18 +371,70 @@ namespace Tunneln.items.connections
         }
 
         public event EventHandler StartConnection;
-        public void OnStartConnection(object sender, EventArgs e)
+        public void OnStartConnection(object sender, EventArgs args)
         {
             if (this.Verification())
             {
-                this._main_window.Start_Connection(this._my_connection);
+                try
+                {
+                    this._main_window.Start_Connection(this._my_connection);
+                    this.status_title.Text = "Connected";
+                    this.status_title.Foreground = Brushes.Blue;
+                    this.Message = "Connected";
+                }
+                catch (Exception e)
+                {
+                    this.status_title.Text = "Error";
+                    this.status_title.Foreground = Brushes.Red;
+                    this.Message = e.Message + "\n" + e.StackTrace;
+                    this.SetIconStatus(Connection_State.Closed);
+                }
             }
         }
 
         public event EventHandler StopConnection;
-        public void OnStopConnection(object sender, EventArgs e)
+        public void OnStopConnection(object sender, EventArgs args)
         {
-            this._main_window.Stop_Connection(this._my_connection);
+            try
+            {
+                this._main_window.Stop_Connection(this._my_connection);
+                this.status_title.Text = "Closed";
+                this.status_title.Foreground = Brushes.Black;
+                this.Message = "Closed";
+            }
+            catch (Exception e)
+            {
+                this.status_title.Text = "Error";
+                this.status_title.Foreground = Brushes.Red;
+                this.Message = e.Message + "\n" + e.StackTrace;
+                this.SetIconStatus(Connection_State.Closed);
+            }
+        }
+
+
+        private void SetIconStatus(Connection_State _state)
+        {
+            switch (_state)
+            {
+                case Connection_State.Waiting:
+                    this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Spinner;
+                    this.status_icon.Spin = true;
+                    this.status_icon.SpinDuration = 5;
+                    this.flow_panel.IsEnabled = false;
+                    break;
+                case Connection_State.Connected:
+                    this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Link;
+                    this.status_icon.Spin = true;
+                    this.status_icon.SpinDuration = 10;
+                    this.flow_panel.IsEnabled = false;
+                    break;
+                default: // Closed
+                    this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
+                    this.status_icon.Spin = false;
+                    this.status_icon.SpinDuration = 0;
+                    this.flow_panel.IsEnabled = true;
+                    break;
+            }
         }
 
         #region ******************************* Verification
@@ -399,32 +448,49 @@ namespace Tunneln.items.connections
         private void connection_Connected(object sender, EventArgs e)
         {
             /* ON(waiting) -> ON(success) */
-            this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Link;
-            this.status_icon.Spin = true;
-            this.status_icon.SpinDuration = 15;
+            this.SetIconStatus(Connection_State.Connected);
         }
         private void toggle_switch_ChangedIsOn(object sender, EventArgs e)
         {
-            if (this.toggle_switch.IsOn)
+            if (this.IsOn)
             {
                 /* OFF -> ON(waiting) */
-                this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Spinner;
-                this.status_icon.Spin = true;
-                this.status_icon.SpinDuration = 5;
-                this.flow_panel.IsEnabled = false;
+                this.SetIconStatus(Connection_State.Waiting);
                 this.StartConnection.Invoke(this, EventArgs.Empty);
             }
             else
             {
                 /* ON -> OFF */
-                this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
-                this.status_icon.Spin = false;
-                this.flow_panel.IsEnabled = true;
+                this.SetIconStatus(Connection_State.Closed);
                 this.StopConnection.Invoke(this, EventArgs.Empty);
             }
         }
         private void toggle_switch_Click(object sender, EventArgs e)
         {
+        }
+
+        private void status_title_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            /* Message をクリップボードへコピー */
+            Clipboard.SetDataObject(this.Message, true);
+            Popup _popup = new Popup();
+            TextBlock _popupText = new TextBlock();
+            _popupText.Text = "Copied Message to Clipboard";
+            _popupText.Background = Brushes.LightGreen;
+            _popupText.Foreground = Brushes.Black;
+            _popup.Child = _popupText;
+            _popup.PlacementTarget = this.status_title;
+            _popup.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+            _popup.IsOpen = true;
+            DispatcherTimer _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _timer.Start();
+            _timer.Tick += (s, args) =>
+            {
+                _popup.IsOpen = false;
+                _popup = null;
+                _popupText = null;
+                _timer.Stop();
+            };
         }
         #endregion
 
