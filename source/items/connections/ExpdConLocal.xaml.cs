@@ -373,6 +373,7 @@ namespace Tunneln.items.connections
         public event EventHandler StartConnection;
         public void OnStartConnection(object sender, EventArgs args)
         {
+            this.CheckMainWindow();
             if (this.Verification())
             {
                 try
@@ -395,6 +396,7 @@ namespace Tunneln.items.connections
         public event EventHandler StopConnection;
         public void OnStopConnection(object sender, EventArgs args)
         {
+            this.CheckMainWindow();
             try
             {
                 this._main_window.Stop_Connection(this._my_connection);
