@@ -34,7 +34,7 @@
                        Grid.Column="0"
             />
             <fa:ImageAwesome x:Name="status_icon" Icon="Unlink" Spin="False"  Margin="5" Height="18" Grid.Column="1"/>
-            <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18" Grid.Column="2" Click="toggle_switch_Click"/>
+            <ts:ToggleSwitch x:Name="toggle_switch" Margin="5" Height="18" Grid.Column="2" Click="toggle_switch_Click" ChangedIsOn="toggle_switch_ChangedIsOn"/>
             <Button x:Name="Deleate" Content="❌" HorizontalAlignment="Center" FontSize="10" Padding="0,0" Height="15" Width="15" Cursor="Hand" Margin="3" Click="Deleate_Click" Grid.Column="3"/>
         </Grid>
     </Expander.Header>

@@ -22,6 +22,7 @@ namespace Tunneln.items.connections
     /// </summary>
     public partial class ExpdConLocal : Expander
     {
+        public bool IsOn { get { return this.toggle_switch.IsOn; } set { this.toggle_switch.IsOn = value; } }
         private MainWindow _main_window;
 
         private void CheckMainWindow()
@@ -83,6 +84,8 @@ namespace Tunneln.items.connections
             InitializeComponent();
             SetInitialConnection();
             SetupDropEvent();
+            this.StartConnection += this.OnStartConnection;
+            this.StopConnection += this.OnStopConnection;
         }
 
         public ExpdConLocal(List<string> config)
@@ -90,6 +93,8 @@ namespace Tunneln.items.connections
             InitializeComponent();
             SetInitialConnection();
             SetupDropEvent();
+            this.StartConnection += this.OnStartConnection;
+            this.StopConnection += this.OnStopConnection;
             this.CheckMainWindow();
             this.Title = config[0];
             config.RemoveAt(0);
@@ -145,18 +150,9 @@ namespace Tunneln.items.connections
             this.flow_panel = (CommonPannel)(new LocalPortForward());
             this.connection_view.Content = this.flow_panel;
             this._my_connection = new MyConnection(this);
-            this._my_connection.Connected += (s, e) =>
-            {
-                this.Connected();
-            };
-            this._my_connection.Disconnected += (s, e) =>
-            {
-                this.StopConnection(false);
-            };
-            this._my_connection.Failed += (s, e) =>
-            {
-                this.StopConnection(false);
-            };
+            this._my_connection.Connected += this.connection_Connected;
+            this._my_connection.Disconnected += (s, e) => { this.toggle_switch.IsOn = false; };
+            this._my_connection.Failed += (s, e) => { this.toggle_switch.IsOn = false; };
         }
 
         private void DragOver_LocalHost(object sender, DragEventArgs e)
@@ -377,58 +373,60 @@ namespace Tunneln.items.connections
             }
         }
 
+        public event EventHandler StartConnection;
+        public void OnStartConnection(object sender, EventArgs e)
+        {
+            if (this.Verification())
+            {
+                this._main_window.Start_Connection(this._my_connection);
+            }
+        }
+
+        public event EventHandler StopConnection;
+        public void OnStopConnection(object sender, EventArgs e)
+        {
+            this._main_window.Stop_Connection(this._my_connection);
+        }
+
+        #region ******************************* Verification
         public bool Verification()
         {
             return true;
         }
+        #endregion
 
-        public void Connected()
+        #region ******************************* Callback
+        private void connection_Connected(object sender, EventArgs e)
         {
-            Debug.Print("Connected");
+            /* ON(waiting) -> ON(success) */
             this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Link;
             this.status_icon.Spin = true;
             this.status_icon.SpinDuration = 15;
         }
-
-        public void StopConnection(bool do_disconnect=true)
+        private void toggle_switch_ChangedIsOn(object sender, EventArgs e)
         {
-            Debug.Print("Stop connection");
-            this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
-            this.status_icon.Spin = false;
-            this.flow_panel.IsEnabled = true;
-        }
-
-        public bool StartConnection()
-        {
-            Debug.Print("Start connection");
-            if (this.Verification())
+            if (this.toggle_switch.IsOn)
             {
+                /* OFF -> ON(waiting) */
                 this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Spinner;
                 this.status_icon.Spin = true;
                 this.status_icon.SpinDuration = 5;
                 this.flow_panel.IsEnabled = false;
-                return true;
+                this.StartConnection.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                return false;
+                /* ON -> OFF */
+                this.status_icon.Icon = FontAwesome.WPF.FontAwesomeIcon.Unlink;
+                this.status_icon.Spin = false;
+                this.flow_panel.IsEnabled = true;
+                this.StopConnection.Invoke(this, EventArgs.Empty);
             }
         }
-
         private void toggle_switch_Click(object sender, EventArgs e)
         {
-            if ((e as ToggleSwitch.EventArgsBool).value)
-            {
-                if (this.StartConnection())
-                {
-                    this._main_window.Start_Connection(this._my_connection);
-                }
-            }
-            else
-            {
-                this.StopConnection();
-                this._main_window.Stop_Connection(this._my_connection);
-            }
         }
+        #endregion
+
     }
 }

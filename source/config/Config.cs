@@ -13,41 +13,38 @@ namespace Tunneln.config
 {
     class Config
     {
-        public const string version = "1.0";
-        public static string SEPARATOR = "\t";
 
+        #region ******************************* Define
+        public const string SEPARATOR = "\t";
+        public const string AUTO_SAVE_FILE = "tunneln.csv";
+        public const int AUTO_SAVE_MINUTES = 1;
+        #endregion
+
+        #region ******************************* Member variable
         private string _path;
-        public string Path
-        {
-            get { return this._path; }
-            set { this._path = value; }
-        }
-
-
-        public List<MyHost> hosts = new List<MyHost>();
-        public List<MyConnection> connections = new List<MyConnection>();
         private DispatcherTimer _timer;
         private MainWindow _main_window;
+        public List<MyHost> hosts = new List<MyHost>();
+        public List<MyConnection> connections = new List<MyConnection>();
+        public string Path { get { return this._path; } set { this._path = value; } }
+        #endregion
 
 
-        public Config(string path)
+        #region ******************************* Public function
+        public Config(string path = null)
         {
+            if (path is null)
+            {
+                path = System.IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh", AUTO_SAVE_FILE);
+            }
             this._path = path;
             Debug.Print(path);
         }
 
-        private void CheckMainWindow()
-        {
-            if (this._main_window is null)
-            {
-                this._main_window = Application.Current.MainWindow as MainWindow;
-            }
-        }
-
-        public void EnableAutoSave(TimeSpan timeSpan)
+        public void EnableAutoSave(int minutes = AUTO_SAVE_MINUTES)
         {
             this._timer = new DispatcherTimer();
-            this._timer.Interval = timeSpan;
+            this._timer.Interval = new TimeSpan(0, minutes, 0);
             this._timer.Tick += new EventHandler(this.Save);
             this._timer.Start();
         }
@@ -138,6 +135,10 @@ namespace Tunneln.config
                 _tmp.Add(_connection.ToString().Replace("\r", "").Replace("\n", ""));
                 _txt.Add(string.Join(Config.SEPARATOR, _tmp));
             }
+            if (!Directory.Exists(System.IO.Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+            }
             File.WriteAllLines(path, _txt.Distinct());
         }
 
@@ -145,10 +146,13 @@ namespace Tunneln.config
         {
             if (item.GetType() == typeof(MyHost))
             {
-                if (!(this.hosts.Contains((MyHost)item))){
+                if (!(this.hosts.Contains((MyHost)item)))
+                {
                     this.hosts.Add((MyHost)item);
                 }
-            }else{
+            }
+            else
+            {
                 if (!(this.connections.Contains((MyConnection)item)))
                 {
                     this.connections.Add((MyConnection)item);
@@ -182,7 +186,8 @@ namespace Tunneln.config
                 try
                 {
                     this.Add(_item);
-                }catch(Exception _e)
+                }
+                catch (Exception _e)
                 {
                     ex.Add(_e);
                 }
@@ -212,5 +217,17 @@ namespace Tunneln.config
                 throw new AggregateException("Multiple Errors Occured", ex);
             }
         }
+
+        #endregion
+
+        #region ******************************* Private function
+        private void CheckMainWindow()
+        {
+            if (this._main_window is null)
+            {
+                this._main_window = Application.Current.MainWindow as MainWindow;
+            }
+        }
+        #endregion
     }
 }
