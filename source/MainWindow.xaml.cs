@@ -29,12 +29,9 @@ namespace Tunneln
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static string AUTO_SAVE_FILE = @"./settings.csv";
-        public TimeSpan AUTO_SAVE_FREQ = new TimeSpan(0, 1, 0);
-
         public event EventHandler ChangedSelectedElement;
 
-        private config.Config _config = new config.Config(AUTO_SAVE_FILE);
+        private config.Config _config = new config.Config();
         private MyHosts _my_hosts = new MyHosts();
         private MyConnections _my_connections = new MyConnections();
 
@@ -84,84 +81,35 @@ namespace Tunneln
 
         public void Start_Connection(MyConnection _item)
         {
-            _item.Start_Connection(false);
+            _item.Start_Connection();
         }
 
         public void Start_Connection()
         {
-            List<Exception> ex = new List<Exception>();
             foreach (MyConnection _item in this._my_connections)
             {
-                try
+                if (!_item.Item.IsOn)
                 {
-                    foreach (object _tmp in this.stack_connections.panel.Children)
-                    {
-                        if (_tmp.GetType() == typeof(ExpdConLocal))
-                        {
-                            ExpdConLocal _con = (ExpdConLocal)_tmp;
-                            if (!(_con.toggle_switch.IsOn))
-                            {
-                                _con.toggle_switch.IsOn = true;
-                            }
-                        }
-                    }
+                    _item.Item.IsOn = true;
                 }
-                catch (Exception _e)
-                {
-                    ex.Add(_e);
-                }
-            }
-            if (ex.Count > 0)
-            {
-                throw new AggregateException("Multiple Errors Occured", ex);
             }
         }
 
         public void Stop_Connection(MyConnection _item)
         {
-            _item.Stop_Connection(false);
+            _item.Stop_Connection();
         }
 
         public void Stop_Connection()
         {
-            List<Exception> ex = new List<Exception>();
             foreach (MyConnection _item in this._my_connections)
             {
-                try
+                if (_item.Item.IsOn)
                 {
-                    foreach (object _tmp in this.stack_connections.panel.Children)
-                    {
-                        if (_tmp.GetType() == typeof(ExpdConLocal))
-                        {
-                            ExpdConLocal _con = (ExpdConLocal)_tmp;
-                            if (_con.toggle_switch.IsOn)
-                            {
-                                _con.toggle_switch.IsOn = false;
-                            }
-                        }
-                    }
-                }
-                catch (Exception _e)
-                {
-                    ex.Add(_e);
+                    _item.Item.IsOn = false;
                 }
             }
-            if (ex.Count > 0)
-            {
-                throw new AggregateException("Multiple Errors Occured", ex);
-            }
         }
-
-        internal void Connected(MyConnection myConnection)
-        {
-            myConnection.Item.Connected();
-        }
-
-        internal void Disconnect(MyConnection myConnection)
-        {
-            myConnection.Item.StopConnection(false);
-        }
-
 
         private void MyInitialize(object sender, RoutedEventArgs e)
         {
@@ -171,7 +119,7 @@ namespace Tunneln
                 this.ChangedSelectedElement(sender, EventArgs.Empty);
             }
             this.MouseLeftButtonDown += this.root_MouseLeftButtonDown;
-            this._config.EnableAutoSave(this.AUTO_SAVE_FREQ);
+            this._config.EnableAutoSave();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)

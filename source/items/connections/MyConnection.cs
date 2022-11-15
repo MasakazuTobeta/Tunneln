@@ -215,62 +215,48 @@ namespace Tunneln.items.connections
 
         private List<SshClient> clients = new List<SshClient>();
         private List<ForwardedPort> forwards = new List<ForwardedPort>();
-        internal void Start_Connection(bool silent = false)
+        internal void Start_Connection()
         {
-            groups.YourComputer _localhost = null;
-            this.CheckPanels();
-            if (this.Item.PfType == "DPF")
+            if ((this.forwards.Count <= 0) && (this.clients.Count <= 0))
             {
-                if (this.Item.flow_panel.Children[this.Item.flow_panel.Children.Count - 1].GetType() == typeof(groups.RemoteHost))
+                groups.YourComputer _localhost = null;
+                this.CheckPanels();
+                if (this.Item.PfType == "DPF")
                 {
-                    this.Item.flow_panel.Children.Add(new groups.SocksIcon());
-                }
-            }
-            foreach (object item in this.Item.flow_panel.Children)
-            {
-                if (item.GetType() == typeof(groups.YourComputer))
-                {
-                    _localhost = (groups.YourComputer)item;
-                }
-                else if (item.GetType() == typeof(groups.RemoteHost))
-                {
-                    if (_localhost is null)
+                    if (this.Item.flow_panel.Children[this.Item.flow_panel.Children.Count - 1].GetType() == typeof(groups.RemoteHost))
                     {
-                        throw new NotSupportedException("Localhost must be defined as the leftmost. " + this.ToString());
+                        this.Item.flow_panel.Children.Add(new groups.SocksIcon());
                     }
-                    else
+                }
+                foreach (object item in this.Item.flow_panel.Children)
+                {
+                    if (item.GetType() == typeof(groups.YourComputer))
                     {
-                        groups.RemoteHost _group_host = (groups.RemoteHost)item;
-                        if (_group_host.IsProxy)
+                        _localhost = (groups.YourComputer)item;
+                    }
+                    else if (item.GetType() == typeof(groups.RemoteHost))
+                    {
+                        if (_localhost is null)
                         {
-                            throw new NotImplementedException("Proxy servers not yet supported");
+                            throw new NotSupportedException("Localhost must be defined as the leftmost. " + this.ToString());
                         }
                         else
                         {
-                            bool _is_target_host = (!(this.Item.flow_panel.Children.IndexOf((UIElement)item) < this.Item.flow_panel.Children.Count - 1));
-                            if (!(_is_target_host))
+                            groups.RemoteHost _group_host = (groups.RemoteHost)item;
+                            if (_group_host.IsProxy)
                             {
-                                /* Jump host */
-                                if (clients.Count < 1)
+                                throw new NotImplementedException("Proxy servers not yet supported");
+                            }
+                            else
+                            {
+                                bool _is_target_host = (!(this.Item.flow_panel.Children.IndexOf((UIElement)item) < this.Item.flow_panel.Children.Count - 1));
+                                if (!(_is_target_host))
                                 {
-                                    /* First host */
-                                    List<ConnectionInfo> _connectionInfo = this.CreateConnectionInfo(_group_host);
-                                    SshClient _client = new SshClient(_connectionInfo[0]);
-                                    _client.ErrorOccurred += _client_ErrorOccurred;
-                                    _client.Connect();
-                                    this.clients.Insert(0, _client);
-                                }
-                                else
-                                {
-                                    /* N th host */
-                                    ForwardedPortLocal _forward = new ForwardedPortLocal(_localhost.Adress, _group_host.Adress, (uint)_group_host.Ports[0]);
-                                    this.clients[0].AddForwardedPort(_forward);
-                                    _forward.Exception += _forward_Exception;
-                                    _forward.Start();
-                                    this.forwards.Insert(0, _forward);
-                                    List<ConnectionInfo> _connectionInfo = this.CreateConnectionInfo(_group_host, adress:_forward.BoundHost, ports:new List<int> { (int)_forward.BoundPort });
-                                    if (_connectionInfo.Count > 0)
+                                    /* Jump host */
+                                    if (clients.Count < 1)
                                     {
+                                        /* First host */
+                                        List<ConnectionInfo> _connectionInfo = this.CreateConnectionInfo(_group_host);
                                         SshClient _client = new SshClient(_connectionInfo[0]);
                                         _client.ErrorOccurred += _client_ErrorOccurred;
                                         _client.Connect();
@@ -278,42 +264,60 @@ namespace Tunneln.items.connections
                                     }
                                     else
                                     {
-                                        this.Failed.Invoke(this, EventArgs.Empty);
+                                        /* N th host */
+                                        ForwardedPortLocal _forward = new ForwardedPortLocal(_localhost.Adress, _group_host.Adress, (uint)_group_host.Ports[0]);
+                                        this.clients[0].AddForwardedPort(_forward);
+                                        _forward.Exception += _forward_Exception;
+                                        _forward.Start();
+                                        this.forwards.Insert(0, _forward);
+                                        List<ConnectionInfo> _connectionInfo = this.CreateConnectionInfo(_group_host, adress: _forward.BoundHost, ports: new List<int> { (int)_forward.BoundPort });
+                                        if (_connectionInfo.Count > 0)
+                                        {
+                                            SshClient _client = new SshClient(_connectionInfo[0]);
+                                            _client.ErrorOccurred += _client_ErrorOccurred;
+                                            _client.Connect();
+                                            this.clients.Insert(0, _client);
+                                        }
+                                        else
+                                        {
+                                            this.Failed.Invoke(this, EventArgs.Empty);
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                /* Target host */
-                                for (int _ii = 0; _ii < _group_host.Ports.Count; _ii++)
+                                else
                                 {
-                                    if (_ii >= _localhost.Ports.Count)
+                                    /* Target host */
+                                    for (int _ii = 0; _ii < _group_host.Ports.Count; _ii++)
                                     {
-                                        break;
+                                        if (_ii >= _localhost.Ports.Count)
+                                        {
+                                            break;
+                                        }
+                                        /* Local port forwarding */
+                                        int _local_port = _localhost.Ports[_ii];
+                                        int _remote_port = _group_host.Ports[_ii];
+                                        ForwardedPortLocal _forward = new ForwardedPortLocal(_localhost.Adress, (uint)_local_port, _group_host.Adress, (uint)_remote_port);
+                                        this.clients[0].AddForwardedPort(_forward);
+                                        _forward.Exception += _forward_Exception;
+                                        _forward.Start();
+                                        this.forwards.Insert(0, _forward);
                                     }
-                                    /* Local port forwarding */
-                                    int _local_port = _localhost.Ports[_ii];
-                                    int _remote_port = _group_host.Ports[_ii];
-                                    ForwardedPortLocal _forward = new ForwardedPortLocal(_localhost.Adress, (uint)_local_port, _group_host.Adress, (uint)_remote_port);
-                                    this.clients[0].AddForwardedPort(_forward);
-                                    _forward.Exception += _forward_Exception;
-                                    _forward.Start();
-                                    this.forwards.Insert(0, _forward);
+                                    this.Connected.Invoke(this, EventArgs.Empty);
                                 }
-                                this._main_window.Connected(this);
                             }
-                        }
 
+                        }
                     }
-                }else if (item.GetType() == typeof(groups.SocksIcon))
-                {
-                    /* Dynamc port forwarding */
-                    ForwardedPortDynamic _forward = new ForwardedPortDynamic(_localhost.Adress, (uint)_localhost.Ports[0]);
-                    this.clients[0].AddForwardedPort(_forward);
-                    _forward.Exception += _forward_Exception;
-                    _forward.Start();
-                    this.forwards.Insert(0, _forward);
-                    this._main_window.Connected(this);
+                    else if (item.GetType() == typeof(groups.SocksIcon))
+                    {
+                        /* Dynamc port forwarding */
+                        ForwardedPortDynamic _forward = new ForwardedPortDynamic(_localhost.Adress, (uint)_localhost.Ports[0]);
+                        this.clients[0].AddForwardedPort(_forward);
+                        _forward.Exception += _forward_Exception;
+                        _forward.Start();
+                        this.forwards.Insert(0, _forward);
+                        this.Connected.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
         }
@@ -341,11 +345,10 @@ namespace Tunneln.items.connections
                 }
                 this.clients = new List<SshClient>();
                 this.forwards = new List<ForwardedPort>();
-                this._main_window.Disconnect(this);
             }
         }
 
-        internal void Stop_Connection(bool silent)
+        internal void Stop_Connection()
         {
             this.Disconnect();
         }
