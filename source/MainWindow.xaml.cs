@@ -144,6 +144,15 @@ namespace Tunneln
             this.SetSelectedElement(this);
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
+            foreach (MyConnection _item in this._my_connections)
+            {
+                _item.Disconnect();
+            }
+            System.Windows.Application.Current.Shutdown();
+        }
 
         #region ******************************* Temporary Authorization
         Dictionary<string, string> _user_name = new Dictionary<string, string>();
@@ -229,5 +238,6 @@ namespace Tunneln
             }
         }
         #endregion
+
     }
 }
