@@ -223,8 +223,8 @@ namespace Tunneln.items.connections
         {
             if ((this.forwards.Count <= 0) && (this.clients.Count <= 0))
             {
-                groups.YourComputer _localhost = null;
                 this.CheckPanels();
+                groups.YourComputer _localhost = null;
                 if (this.Item.PfType == "DPF")
                 {
                     if (this.Item.flow_panel.Children[this.Item.flow_panel.Children.Count - 1].GetType() == typeof(groups.RemoteHost))
@@ -337,20 +337,27 @@ namespace Tunneln.items.connections
         {
             if ((this.forwards.Count>0) || (this.clients.Count>0))
             {
-                foreach (SshClient _client in this.clients)
+                for (int ii=0; ii < Math.Max(this.forwards.Count, this.clients.Count); ii++)
                 {
-                    if (_client.IsConnected)
+                    if (this.forwards.Count > ii)
                     {
-                        _client.Disconnect();
+                        if (this.forwards[ii].IsStarted)
+                        {
+                            this.forwards[ii].Stop();
+                        }
+
+                    }
+                    if (this.clients.Count > ii)
+                    {
+                        if (this.clients[ii].IsConnected)
+                        {
+                            this.clients[ii].Disconnect();
+                            this.clients[ii].Dispose();
+                        }
+
                     }
                 }
-                foreach (ForwardedPort _forward in this.forwards)
-                {
-                    if (_forward.IsStarted)
-                    {
-                        _forward.Stop();
-                    }
-                }
+
                 this.clients = new List<SshClient>();
                 this.forwards = new List<ForwardedPort>();
             }
