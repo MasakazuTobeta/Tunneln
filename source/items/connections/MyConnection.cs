@@ -209,6 +209,10 @@ namespace Tunneln.items.connections
                 }
 
             }
+            foreach (ConnectionInfo _info in ret)
+            {
+                _info.Timeout = new TimeSpan(0, 1, 0);
+            }
 
             return ret;
         }
@@ -382,6 +386,8 @@ namespace Tunneln.items.connections
         private List<MyConnection> _connections = new List<MyConnection>();
         private MainWindow _main_window = null;
         private Connections _panel = null;
+
+        public int Count { get { return this._connections.Count; } }
 
         public MyConnections()
         {

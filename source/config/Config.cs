@@ -105,6 +105,10 @@ namespace Tunneln.config
             {
                 throw new AggregateException("Multiple Errors Occured", ex);
             }
+            if (this._main_window.Connections.Count >= 5)
+            {
+                this._main_window.MinimizeConnections();
+            }
         }
 
         public void Save(object sender, EventArgs e)
