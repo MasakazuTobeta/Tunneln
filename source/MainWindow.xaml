@@ -9,6 +9,7 @@
         xmlns:remotehosts="clr-namespace:Tunneln.items.hosts"
         xmlns:connections="clr-namespace:Tunneln.items.connections"
         mc:Ignorable="d" KeyDown="Window_KeyDown"
+        Closed="Window_Closed"
         Title="Tunneln" Height="450" Width="800">
     <Grid x:Name="root_grid" x:FieldModifier="public" Grid.Row="0" Grid.Column="0">
         <Grid>

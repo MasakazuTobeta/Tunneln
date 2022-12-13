@@ -105,6 +105,10 @@ namespace Tunneln.config
             {
                 throw new AggregateException("Multiple Errors Occured", ex);
             }
+            if (this._main_window.Connections.Count >= 5)
+            {
+                this._main_window.MinimizeConnections();
+            }
         }
 
         public void Save(object sender, EventArgs e)
@@ -142,18 +146,46 @@ namespace Tunneln.config
             File.WriteAllLines(path, _txt.Distinct());
         }
 
+        private int FindHost(MyHost item)
+        {
+            int idx = -1;
+            for (int _ii = 0; _ii < this.hosts.Count; _ii++)
+            {
+                if (item.ToString() == this.hosts[_ii].ToString())
+                {
+                    idx = _ii;
+                    break;
+                }
+            }
+            return idx;
+        }
+
+        private int FindConnection(MyConnection item)
+        {
+            int idx = -1;
+            for (int _ii = 0; _ii < this.connections.Count; _ii++)
+            {
+                if (item.ToString() == this.connections[_ii].ToString())
+                {
+                    idx = _ii;
+                    break;
+                }
+            }
+            return idx;
+        }
+
         public void Add(object item)
         {
             if (item.GetType() == typeof(MyHost))
             {
-                if (!(this.hosts.Contains((MyHost)item)))
+                if (this.FindHost((MyHost)item) < 0)
                 {
                     this.hosts.Add((MyHost)item);
                 }
             }
             else
             {
-                if (!(this.connections.Contains((MyConnection)item)))
+                if (this.FindConnection((MyConnection)item) < 0)
                 {
                     this.connections.Add((MyConnection)item);
                 }
@@ -164,16 +196,18 @@ namespace Tunneln.config
         {
             if (item.GetType() == typeof(MyHost))
             {
-                if (this.hosts.Contains((MyHost)item))
+                int _idx = this.FindHost((MyHost)item);
+                if (_idx >= 0)
                 {
-                    this.hosts.Remove((MyHost)item);
+                    this.hosts.RemoveAt(_idx);
                 }
             }
             else
             {
-                if (this.connections.Contains((MyConnection)item))
+                int _idx = this.FindConnection((MyConnection)item);
+                if (_idx >= 0)
                 {
-                    this.connections.Remove((MyConnection)item);
+                    this.connections.RemoveAt(_idx);
                 }
             }
         }

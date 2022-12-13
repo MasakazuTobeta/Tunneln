@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -134,7 +135,17 @@ namespace Tunneln.items.hosts.dialog
 
         private void select_key_file_Click(object sender, RoutedEventArgs e)
         {
-            // キーファイル選択ダイアログ
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.FileName = "id_rsa";
+            ofd.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            ofd.Title = "Please select your private key file";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            if ((bool)ofd.ShowDialog())
+            {
+                this.key.Text = ofd.FileName;
+            }
         }
     }
 }

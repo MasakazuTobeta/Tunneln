@@ -46,6 +46,10 @@
             <ComboBoxItem x:Name="type_remote" Content=" Remote port forwarding (RPF)" IsEnabled="False" Tag="RPF"/>
         </ComboBox>
         <ScrollViewer x:Name="connection_view" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" AllowDrop="True" DragOver="connection_view_DragOver"  DragLeave="connection_view_DragLeave" DragEnter="connection_view_DragEnter" Drop="connection_view_Drop"/>
-        <TextBlock x:Name="status_massage"  Text="(status)" TextAlignment="Right" Margin="5,0,5,0"/>
+        <TextBlock x:Name="status_title"  Text="(status)" TextAlignment="Right" Margin="5,0,5,0" MouseRightButtonDown="status_title_MouseRightButtonDown">
+                <ToolTipService.ToolTip>
+                    <TextBlock x:Name="status_message" Text="Message" Width="200" TextWrapping="Wrap"/>
+                </ToolTipService.ToolTip>
+        </TextBlock>
     </StackPanel>
 </Expander>

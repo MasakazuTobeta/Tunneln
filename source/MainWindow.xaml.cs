@@ -35,6 +35,8 @@ namespace Tunneln
         private MyHosts _my_hosts = new MyHosts();
         private MyConnections _my_connections = new MyConnections();
 
+        public MyConnections Connections { get { return this._my_connections; } }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -138,12 +140,29 @@ namespace Tunneln
             set{this._focused = value;}
         }
 
+        internal void MinimizeConnections()
+        {
+            foreach (MyConnection _con in this._my_connections)
+            {
+                _con.Item.IsExpanded = false;
+            }
+        }
+
         private void root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.Focused = true;
             this.SetSelectedElement(this);
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
+            foreach (MyConnection _item in this._my_connections)
+            {
+                _item.Disconnect();
+            }
+            System.Windows.Application.Current.Shutdown();
+        }
 
         #region ******************************* Temporary Authorization
         Dictionary<string, string> _user_name = new Dictionary<string, string>();
@@ -229,5 +248,6 @@ namespace Tunneln
             }
         }
         #endregion
+
     }
 }

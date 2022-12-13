@@ -15,12 +15,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using WpfControlLibrary;
 
 namespace Tunneln.items.hosts.dialog
@@ -137,10 +139,36 @@ namespace Tunneln.items.hosts.dialog
                 if (exists.Count <= 0)
                 {
                     /* Add the name+ip to hosts file */
-                    string stdOut;
-                    string stdErr;
-                    int exitCode;
-                    RunCmd(@"echo " + this.address.Text + " " + this.name.Text + @" >> C:\Windows\System32\drivers\etc\hosts", out stdOut, out stdErr, out exitCode, admin:true);
+                    DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+                    timer.Start();
+                    timer.Tick += (s, args) =>
+                    {
+                        timer.Stop();
+                        string stdOut;
+                        string stdErr;
+                        int exitCode;
+                        if (RunCmd(@"echo " + this.address.Text + " " + this.name.Text + @" >> C:\Windows\System32\drivers\etc\hosts", out stdOut, out stdErr, out exitCode, admin: true) != 0)
+                        {
+                            Popup _popup = new Popup();
+                            TextBlock _popupText = new TextBlock();
+                            _popupText.Text = stdErr;
+                            _popupText.Background = Brushes.LightPink;
+                            _popupText.Foreground = Brushes.Black;
+                            _popup.Child = _popupText;
+                            _popup.PlacementTarget = this.add_to_hosts_file;
+                            _popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                            _popup.IsOpen = true;
+                            DispatcherTimer _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                            _timer.Start();
+                            _timer.Tick += (s, args) =>
+                            {
+                                _popup.IsOpen = false;
+                                _popup = null;
+                                _popupText = null;
+                                _timer.Stop();
+                            };
+                        }
+                    };
                 }
             }
             else
@@ -148,7 +176,8 @@ namespace Tunneln.items.hosts.dialog
                 List<string> _cmd = new List<string>();
                 foreach (string exist in this.CheckExistInHostsFile())
                 {
-                    _cmd.Add(@"resource\grep.bat C:\Windows\System32\drivers\etc\hosts .\.hosts.bak " + exist + " #" + exist);
+                    string _exist = exist.Split(" ")[0];
+                    _cmd.Add(@"resource\grep.bat C:\Windows\System32\drivers\etc\hosts .\.hosts.bak " + _exist + " #" + _exist);
                 }
                 if (_cmd.Count > 0)
                 {
@@ -156,9 +185,29 @@ namespace Tunneln.items.hosts.dialog
                     string stdOut;
                     string stdErr;
                     int exitCode;
-                    RunCmd(string.Join("&&", _cmd) +
+                    if (RunCmd(string.Join("&&", _cmd) +
                            @"&& copy /Y .\.hosts.bak C:\Windows\System32\drivers\etc\hosts",
-                            out stdOut, out stdErr, out exitCode, admin: true, workdir:Directory.GetCurrentDirectory());
+                            out stdOut, out stdErr, out exitCode, admin: true, workdir: Directory.GetCurrentDirectory()) != 0)
+                    {
+                        Popup _popup = new Popup();
+                        TextBlock _popupText = new TextBlock();
+                        _popupText.Text = stdErr;
+                        _popupText.Background = Brushes.LightPink;
+                        _popupText.Foreground = Brushes.Black;
+                        _popup.Child = _popupText;
+                        _popup.PlacementTarget = this.add_to_hosts_file;
+                        _popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                        _popup.IsOpen = true;
+                        DispatcherTimer _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                        _timer.Start();
+                        _timer.Tick += (s, args) =>
+                        {
+                            _popup.IsOpen = false;
+                            _popup = null;
+                            _popupText = null;
+                            _timer.Stop();
+                        };
+                    }
                 }
             }
             this.Topmost = false;
@@ -173,9 +222,12 @@ namespace Tunneln.items.hosts.dialog
             int exitCode;
             if (RunCmd(@"type C:\Windows\System32\drivers\etc\hosts", out stdOut, out stdErr, out exitCode) == 0)
             {
-                foreach (Match _match in Regex.Matches(stdOut, this.address.Text + " "))
+                foreach (string _line in stdOut.Split("\r\n"))
                 {
-                    ret.Add(_match.Value.Replace("\r",""));
+                    if (_line.StartsWith(this.address.Text + " "))
+                    {
+                        ret.Add(_line);
+                    }
                 }
             }
             IEnumerable<string> _result = ret.Distinct();
