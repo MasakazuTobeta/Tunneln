@@ -101,6 +101,10 @@ namespace Tunneln.config
                     }
                 }
             }
+            else
+            {
+                return;
+            }
             if (ex.Count > 0)
             {
                 throw new AggregateException("Multiple Errors Occured", ex);
